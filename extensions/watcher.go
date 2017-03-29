@@ -1,8 +1,6 @@
 package extensions
 
 import (
-	"time"
-
 	log "github.com/Sirupsen/logrus"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/kubernetes"
@@ -17,7 +15,8 @@ import (
 // Watcher is the extension that watches for kubernetes services changes
 type Watcher struct {
 	config        *viper.Viper
-	interval      time.Duration
+	tokenPerSec   float32 // Token per second on Token-Bucket algorithm
+	busrt         int     // Bucket size on Token-Bucket algorithm
 	kubeConfig    *rest.Config
 	kubeClientSet *kubernetes.Clientset
 }
@@ -39,7 +38,8 @@ func (w *Watcher) loadConfigurationDefaults() {
 }
 
 func (w *Watcher) configure() error {
-	w.interval = time.Duration(w.config.GetInt("watcher.intervalms"))
+	w.tokenPerSec = float32(w.config.GetFloat64("watcher.token-per-sec"))
+	w.busrt = w.config.GetInt("wather.burst")
 	var err error
 	w.kubeConfig, err = rest.InClusterConfig()
 	if err != nil {
@@ -61,9 +61,12 @@ func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
 
 // Start starts the watcher, this call is blocking!
 func (w *Watcher) Start() {
-	l := log.WithField("interval", w.interval)
+	l := log.WithFields(log.Fields{
+		"tokenPerSecond": w.tokenPerSec,
+		"burst":          w.busrt,
+	})
 	l.Info("starting mystack watcher")
-	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(0.1, 1)
+	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.busrt)
 	for {
 		rateLimiter.Accept()
 		services, err := w.getMyStackServices()
@@ -72,7 +75,5 @@ func (w *Watcher) Start() {
 		} else {
 			log.WithField("services", services.Items).Info("got items")
 		}
-		time.Sleep(w.interval)
 	}
-
 }

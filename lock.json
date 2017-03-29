@@ -1,5 +1,5 @@
 {
-    "memo": "46fc20fcf7f366d0ebed10693a9bd4598e7c7e2e520669ecf9b4f4215317131d",
+    "memo": "53bf43b0291d598d661f7515bd0dbfa1f1bb23cf406712e977dfea86c958ffc8",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -101,7 +101,7 @@
         },
         {
             "name": "github.com/ghodss/yaml",
-            "branch": "master",
+            "version": "v1.0.0",
             "revision": "0ca9ea5df5451ffdf184b4428c902747c2c11cd7",
             "packages": [
                 "."
@@ -231,7 +231,7 @@
         {
             "name": "github.com/mailru/easyjson",
             "branch": "master",
-            "revision": "db58e6f9072c545a3a24b8d44c51d81fff6dcb51",
+            "revision": "2af9a745a611440bab0528e5ac19b2805a1c50eb",
             "packages": [
                 "buffer",
                 "jlexer",
@@ -320,6 +320,15 @@
             ]
         },
         {
+            "name": "github.com/topfreegames/mystack-router",
+            "branch": "master",
+            "revision": "0fcc0f4251884ca6d483cdcfd320ce2d31d1137b",
+            "packages": [
+                "cmd",
+                "extensions"
+            ]
+        },
+        {
             "name": "github.com/ugorji/go",
             "branch": "master",
             "revision": "708a42d246822952f38190a8d8c4e6b16a0e600c",
@@ -330,7 +339,7 @@
         {
             "name": "golang.org/x/net",
             "branch": "master",
-            "revision": "6c23252515492caf9b228a9d5cabcdbde29f7f82",
+            "revision": "05d3205156cb1bdc096578d6457fa161cd950aa2",
             "packages": [
                 "context",
                 "context/ctxhttp",
@@ -357,7 +366,7 @@
         {
             "name": "golang.org/x/sys",
             "branch": "master",
-            "revision": "afadfcc7779c1f4db0f6f6438afcb108d9c9c7cd",
+            "revision": "9a7256cb28ed514b4e1e5f68959914c4c28a92e0",
             "packages": [
                 "unix"
             ]
@@ -429,33 +438,6 @@
             "revision": "a3f3340b5840cee44f372bddb5880fcbc419b46a",
             "packages": [
                 "."
-            ]
-        },
-        {
-            "name": "k8s.io/apimachinery",
-            "branch": "master",
-            "revision": "75b8dd260ef0469d96d578705a87cffd0e09dab8",
-            "packages": [
-                "pkg/api/resource",
-                "pkg/apis/meta/v1",
-                "pkg/conversion",
-                "pkg/conversion/queryparams",
-                "pkg/fields",
-                "pkg/labels",
-                "pkg/openapi",
-                "pkg/runtime",
-                "pkg/runtime/schema",
-                "pkg/selection",
-                "pkg/types",
-                "pkg/util/errors",
-                "pkg/util/intstr",
-                "pkg/util/net",
-                "pkg/util/runtime",
-                "pkg/util/sets",
-                "pkg/util/validation",
-                "pkg/util/wait",
-                "pkg/watch",
-                "third_party/forked/golang/reflect"
             ]
         },
         {

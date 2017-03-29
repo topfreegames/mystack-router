@@ -35,7 +35,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "config/local.yaml", "config file (default is config/local.yaml)")
+	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config/local.yaml", "config file (default is config/local.yaml)")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -48,7 +48,6 @@ func initConfig() {
 	config.SetConfigName("")
 	config.SetEnvPrefix("MYSTACK")
 	config.AutomaticEnv()
-	fmt.Printf("olha env %s\n", config.GetString("ola"))
 
 	// If a config file is found, read it in.
 	if err := config.ReadInConfig(); err == nil {
