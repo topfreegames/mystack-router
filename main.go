@@ -7,8 +7,8 @@
 
 package main
 
-import "github.com/topfreegames/mystack-router/cmd"
+import "github.com/topfreegames/mystack/mystack-router/cmd"
 
 func main() {
-	cmd.Execute()
+	cmd.Execute(cmd.RootCmd)
 }

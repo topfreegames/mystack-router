@@ -1,5 +1,5 @@
 {
-    "memo": "53bf43b0291d598d661f7515bd0dbfa1f1bb23cf406712e977dfea86c958ffc8",
+    "memo": "0f4bf436b37c3f3f84f8e1954a2f861d73a60a0496cd9b2bfdfd33ca09023223",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -320,15 +320,6 @@
             ]
         },
         {
-            "name": "github.com/topfreegames/mystack-router",
-            "branch": "master",
-            "revision": "0fcc0f4251884ca6d483cdcfd320ce2d31d1137b",
-            "packages": [
-                "cmd",
-                "extensions"
-            ]
-        },
-        {
             "name": "github.com/ugorji/go",
             "branch": "master",
             "revision": "708a42d246822952f38190a8d8c4e6b16a0e600c",
@@ -339,7 +330,7 @@
         {
             "name": "golang.org/x/net",
             "branch": "master",
-            "revision": "05d3205156cb1bdc096578d6457fa161cd950aa2",
+            "revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
             "packages": [
                 "context",
                 "context/ctxhttp",

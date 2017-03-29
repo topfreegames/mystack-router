@@ -1,4 +1,3 @@
----
 watcher:
   token-per-sec: 0.1
   burst: 1

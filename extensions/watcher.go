@@ -10,6 +10,8 @@ import (
 	"k8s.io/client-go/pkg/labels"
 	"k8s.io/client-go/pkg/util/flowcontrol"
 	"k8s.io/client-go/rest"
+
+	"github.com/topfreegames/mystack/mystack-router/nginx"
 )
 
 // Watcher is the extension that watches for kubernetes services changes
@@ -39,12 +41,14 @@ func (w *Watcher) loadConfigurationDefaults() {
 
 func (w *Watcher) configure() error {
 	w.tokenPerSec = float32(w.config.GetFloat64("watcher.token-per-sec"))
-	w.busrt = w.config.GetInt("wather.burst")
+	w.busrt = w.config.GetInt("watcher.burst")
+
 	var err error
 	w.kubeConfig, err = rest.InClusterConfig()
 	if err != nil {
 		return err
 	}
+
 	w.kubeClientSet, err = kubernetes.NewForConfig(w.kubeConfig)
 	return err
 }
@@ -67,6 +71,7 @@ func (w *Watcher) Start() {
 	})
 	l.Info("starting mystack watcher")
 	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.busrt)
+	nginx.Start(l)
 	for {
 		rateLimiter.Accept()
 		services, err := w.getMyStackServices()
