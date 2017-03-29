@@ -18,7 +18,7 @@ import (
 type Watcher struct {
 	config        *viper.Viper
 	tokenPerSec   float32 // Token per second on Token-Bucket algorithm
-	busrt         int     // Bucket size on Token-Bucket algorithm
+	burst         int     // Bucket size on Token-Bucket algorithm
 	kubeConfig    *rest.Config
 	kubeClientSet *kubernetes.Clientset
 }
@@ -41,7 +41,7 @@ func (w *Watcher) loadConfigurationDefaults() {
 
 func (w *Watcher) configure() error {
 	w.tokenPerSec = float32(w.config.GetFloat64("watcher.token-per-sec"))
-	w.busrt = w.config.GetInt("watcher.burst")
+	w.burst = w.config.GetInt("watcher.burst")
 
 	var err error
 	w.kubeConfig, err = rest.InClusterConfig()
@@ -67,10 +67,10 @@ func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
 func (w *Watcher) Start() {
 	l := log.WithFields(log.Fields{
 		"tokenPerSecond": w.tokenPerSec,
-		"burst":          w.busrt,
+		"burst":          w.burst,
 	})
 	l.Info("starting mystack watcher")
-	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.busrt)
+	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.burst)
 	nginx.Start(l)
 	for {
 		rateLimiter.Accept()
