@@ -8,6 +8,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/mystack/mystack-router/extensions"
 )
@@ -23,7 +24,11 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		w.Start()
+		err = w.Start()
+		if err != nil {
+			fmt.Println(err)
+			panic(err)
+		}
 	},
 }
 

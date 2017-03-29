@@ -1,5 +1,5 @@
 {
-    "memo": "0f4bf436b37c3f3f84f8e1954a2f861d73a60a0496cd9b2bfdfd33ca09023223",
+    "memo": "0f42fda155cefd448f210fc27ffcffd01105fc1e883c2403c3b34dc5dccbee33",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -8,6 +8,22 @@
             "packages": [
                 "compute/metadata",
                 "internal"
+            ]
+        },
+        {
+            "name": "github.com/Masterminds/semver",
+            "version": "v1.2.2",
+            "revision": "59c29afe1a994eacb71c833025ca7acf874bb1da",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/Masterminds/sprig",
+            "version": "2.10.0",
+            "revision": "23597e5f6ad0e4d590e71314bfd0251a4a3cf849",
+            "packages": [
+                "."
             ]
         },
         {
@@ -30,6 +46,14 @@
             "name": "github.com/Sirupsen/logrus",
             "version": "v0.11.5",
             "revision": "ba1b36c82c5e05c4f912a88eab0dcd91a171688f",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/aokoli/goutils",
+            "version": "1.0.0",
+            "revision": "45307ec16e3cd47cd841506c081f7afd8237d210",
             "packages": [
                 "."
             ]
@@ -271,6 +295,14 @@
             ]
         },
         {
+            "name": "github.com/satori/go.uuid",
+            "version": "v1.1.0",
+            "revision": "879c5887cd475cd7864858769793b2ceb0d44feb",
+            "packages": [
+                "."
+            ]
+        },
+        {
             "name": "github.com/spf13/afero",
             "branch": "master",
             "revision": "9be650865eab0c12963d8753212f4f9c66cdcf12",
@@ -325,6 +357,15 @@
             "revision": "708a42d246822952f38190a8d8c4e6b16a0e600c",
             "packages": [
                 "codec"
+            ]
+        },
+        {
+            "name": "golang.org/x/crypto",
+            "branch": "master",
+            "revision": "459e26527287adbc2adcc5d0d49abff9a5f315a7",
+            "packages": [
+                "pbkdf2",
+                "scrypt"
             ]
         },
         {

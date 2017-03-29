@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: router
-        image: henrod/router:v7
+        image: henrod/router:v23
         ports:
           - containerPort: 80
 ---
