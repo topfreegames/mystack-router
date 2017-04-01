@@ -9,7 +9,7 @@ package nginx
 
 import (
 	"github.com/Masterminds/sprig"
-	"github.com/topfreegames/mystack/mystack-router/model"
+	"github.com/topfreegames/mystack-router/model"
 	"os"
 	"text/template"
 )

@@ -1,5 +1,5 @@
 // mystack-router api
-// https://github.com/topfreegames/mystack/mystack-router
+// https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
 // http://www.opensource.org/licenses/mit-license
@@ -10,7 +10,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/topfreegames/mystack/mystack-router/extensions"
+	"github.com/topfreegames/mystack-router/extensions"
 )
 
 // startCmd represents the start command

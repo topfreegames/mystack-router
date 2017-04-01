@@ -16,8 +16,8 @@ import (
 	"k8s.io/client-go/pkg/util/flowcontrol"
 	"k8s.io/client-go/rest"
 
-	"github.com/topfreegames/mystack/mystack-router/model"
-	"github.com/topfreegames/mystack/mystack-router/nginx"
+	"github.com/topfreegames/mystack-router/model"
+	"github.com/topfreegames/mystack-router/nginx"
 )
 
 const (

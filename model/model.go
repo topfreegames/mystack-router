@@ -1,5 +1,5 @@
 // mystack-router api
-// https://github.com/topfreegames/mystack/mystack-router
+// https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
 // http://www.opensource.org/licenses/mit-license
