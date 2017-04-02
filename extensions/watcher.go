@@ -50,8 +50,9 @@ func (w *Watcher) loadConfigurationDefaults() {
 }
 
 func (w *Watcher) configure() error {
-	w.tokenPerSec = float32(w.config.GetFloat64("watcher.token-per-sec"))
-	w.burst = w.config.GetInt("watcher.burst")
+	key := "watcher.router-refresh-min-interval-s"
+	w.burst = 1
+	w.tokenPerSec = float32(w.burst) / float32(w.config.GetFloat64(key))
 
 	var err error
 	w.kubeConfig, err = rest.InClusterConfig()
