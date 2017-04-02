@@ -24,8 +24,8 @@ FROM nginx
 MAINTAINER TFG Co <backend@tfgco.com>
 
 RUN mkdir /app
-ADD ./bin/mystack-router-linux-amd64 /app/mystack-router
-ADD ./config/local.yaml /app/config/local.yaml
+COPY ./bin/mystack-router-linux-amd64 /app/mystack-router
+COPY ./config/local.yaml /app/config/local.yaml
 
 WORKDIR /app
 

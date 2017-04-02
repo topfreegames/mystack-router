@@ -1,7 +1,6 @@
 package extensions
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"reflect"
@@ -107,54 +106,39 @@ func (w *Watcher) Start() error {
 
 	err := os.MkdirAll(nginxConfigDir, os.ModePerm)
 	if err != nil {
-		fmt.Println("Mkdir error:", err)
 		return err
 	}
 	err = exec.Command("touch", nginxConfigFilePath).Run()
 	if err != nil {
-		fmt.Println("Touch error:", err)
 		return err
 	}
 
 	err = nginx.Start(l)
 	if err != nil {
-		fmt.Println("Nginx start error:", err)
 		return err
 	}
 
 	for {
 		rateLimiter.Accept()
-
-		services, err := w.getMyStackServices()
-		if err != nil {
-			fmt.Println("Get services error:", err)
-			return err
-		}
-
-		log.WithField("services", services.Items).Info("got items")
-
 		routerConfig, err := w.build()
 		if err != nil {
-			fmt.Println("Build config error:", err)
 			return err
-		}
-		if reflect.DeepEqual(routerConfig, known) {
-			continue
 		}
 		// Generate new RouterConfig with Build calling getMyStackServices
 		// If DeepEquals to known, call continue to loop
 		// else, calls reload and save new known
-
+		if reflect.DeepEqual(routerConfig, known) {
+			continue
+		}
 		err = nginx.WriteConfig(routerConfig, nginxConfigFilePath)
 		if err != nil {
-			fmt.Println(err)
 			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)
 			continue
 		}
 		err = nginx.Reload(l)
 		if err != nil {
-			fmt.Println("Nginx reload error:", err)
 			return err
 		}
+		known = routerConfig
 	}
 }
