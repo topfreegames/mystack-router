@@ -22,15 +22,16 @@ events {
 }
 
 http {
-	server {
-		listen 80;
-
 	{{range .AppConfigs}}
-		location /{{.Name}} {
-			proxy_pass http://{{.ServiceIP}}:80;
+	server {
+		listen 5001;
+		server_name {{.Domain}};
+
+		location / {
+			proxy_pass http://{{.ServiceIP}}:5000;
 		}
-	{{end}}	
 	}
+	{{end}}	
 }
 `
 

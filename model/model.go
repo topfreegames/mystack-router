@@ -8,6 +8,7 @@
 package model
 
 import (
+	"fmt"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
 )
@@ -21,8 +22,7 @@ type RouterConfig struct {
 
 // AppConfig encapsulates the configuration for all routes to a single back end.
 type AppConfig struct {
-	Name      string
-	Domains   []string `key:"domains" constraint:"(?i)^((([a-z0-9]+(-*[a-z0-9]+)*)|((\\*\\.)?[a-z0-9]+(-*[a-z0-9]+)*\\.)+[a-z0-9]+(-*[a-z0-9]+)+)(\\s*,\\s*)?)+$"`
+	Domain    string
 	ServiceIP string
 	Available bool
 }
@@ -39,22 +39,7 @@ func NewRouterConfig() *RouterConfig {
 func BuildAppConfig(kubeClient *kubernetes.Clientset, service v1.Service, routerConfig *RouterConfig) (*AppConfig, error) {
 	appConfig := &AppConfig{}
 
-	appConfig.Name = service.Labels["app"]
-	if appConfig.Name == "" {
-		appConfig.Name = service.Name
-	}
-	if appConfig.Name != service.Namespace {
-		appConfig.Name = service.Namespace + "/" + appConfig.Name
-	}
-
-	domain := service.Annotations["router.mystack/domains"]
-	appConfig.Domains = []string{domain}
-
-	// If no domains are found, we don't have the information we need to build routes
-	// to this application.  Abort.
-	if len(appConfig.Domains) == 0 {
-		return nil, nil
-	}
+	appConfig.Domain = fmt.Sprintf("%s.%s.tfgapps.com", service.Namespace, service.Name)
 
 	appConfig.ServiceIP = service.Spec.ClusterIP
 	endpointsClient := kubeClient.Endpoints(service.Namespace)
