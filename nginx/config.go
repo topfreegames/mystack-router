@@ -22,9 +22,12 @@ events {
 }
 
 http {
+	server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
+	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
+
 	{{range .AppConfigs}}
 	server {
-		listen 5001;
+		listen 8080;
 		server_name {{.Domain}};
 
 		location / {

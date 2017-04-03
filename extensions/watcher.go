@@ -65,7 +65,7 @@ func (w *Watcher) configure() error {
 }
 
 func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
-	labelMap := labels.Set{"router.mystack/routable": "true"}
+	labelMap := labels.Set{"mystack/routable": "true"}
 	listOptions := v1.ListOptions{
 		LabelSelector: labelMap.AsSelector().String(),
 		FieldSelector: fields.Everything().String(),
