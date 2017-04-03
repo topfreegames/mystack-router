@@ -4,20 +4,18 @@ mystack-router
 The router for mystack.
 
 ## About
-Discovers new clusters on Kubernetes cluster and creates routes on [Nginx](http://nginx.org) for your specific domain.
+Discovers new services on Kubernetes cluster and creates routes on [Nginx](http://nginx.org) for your specific domain.
 
 The routes are filtered by namespace (one for each user) and service. 
 
-Each service runs on Kubernetes with an image from Dockerhub.
-
 ## Dependencies
 * Go 1.7
-* Docker 17.03
+* Docker
 
 ## Building
 #### Build a linux binary
 ```shell
-  make cross-build-linux-amd64:
+  make cross-build-linux-amd64
 ```
 
 
@@ -85,4 +83,9 @@ For example, given that:
 Then this service is reachable through mystack-router with:
 ```shell
   curl -v -H 'Host: hello-world.mystack-user.example.com' http://k8s_ip:8080
+```
+
+If you have a domain with prefix `example.com` on the internet, you can point `*.example.com` to your mystack-router external-ip and access your service with:
+```shell
+  curl -v hello-world.mystack-user.example.com:8080
 ```
