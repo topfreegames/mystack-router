@@ -31,7 +31,7 @@ http {
 		server_name {{.Domain}};
 
 		location / {
-			proxy_pass http://{{.ServiceIP}}:5000;
+			proxy_pass http://{{.ServiceIP}}:80;
 		}
 	}
 	{{end}}	
