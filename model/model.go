@@ -42,10 +42,10 @@ func NewRouterConfig() *RouterConfig {
 }
 
 //BuildAppConfig builds AppConfig from kubeclient
-func BuildAppConfig(kubeClient *kubernetes.Clientset, service v1.Service, routerConfig *RouterConfig) (*AppConfig, error) {
+func BuildAppConfig(kubeClient *kubernetes.Clientset, service v1.Service, routerConfig *RouterConfig, kubeDomainSufix string) (*AppConfig, error) {
 	appConfig := &AppConfig{}
 
-	appConfig.Domain = fmt.Sprintf("%s.%s.tfgapps.com", service.Name, service.Namespace)
+	appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSufix)
 
 	appConfig.ServiceIP = service.Spec.ClusterIP
 	endpointsClient := kubeClient.Endpoints(service.Namespace)

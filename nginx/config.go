@@ -35,6 +35,12 @@ http {
 		}
 	}
 	{{end}}	
+
+  server {
+    listen 8080 default_server;
+    server_name _;
+    return 404;
+  }
 }
 `
 

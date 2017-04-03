@@ -26,11 +26,12 @@ const (
 
 // Watcher is the extension that watches for kubernetes services changes
 type Watcher struct {
-	config        *viper.Viper
-	tokenPerSec   float32 // Token per second on Token-Bucket algorithm
-	burst         int     // Bucket size on Token-Bucket algorithm
-	kubeConfig    *rest.Config
-	kubeClientSet *kubernetes.Clientset
+	config          *viper.Viper
+	tokenPerSec     float32 // Token per second on Token-Bucket algorithm
+	burst           int     // Bucket size on Token-Bucket algorithm
+	kubeConfig      *rest.Config
+	kubeClientSet   *kubernetes.Clientset
+	kubeDomainSufix string
 }
 
 // NewWatcher creates a new watcher instance
@@ -61,6 +62,9 @@ func (w *Watcher) configure() error {
 	}
 
 	w.kubeClientSet, err = kubernetes.NewForConfig(w.kubeConfig)
+
+	w.kubeDomainSufix = w.config.GetString("watcher.kubernetes-service-domain-sufix")
+
 	return err
 }
 
@@ -83,7 +87,7 @@ func (w *Watcher) build() (*model.RouterConfig, error) {
 	routerConfig := model.NewRouterConfig()
 
 	for _, appService := range appServices.Items {
-		appConfig, err := model.BuildAppConfig(w.kubeClientSet, appService, routerConfig)
+		appConfig, err := model.BuildAppConfig(w.kubeClientSet, appService, routerConfig, w.kubeDomainSufix)
 		if err != nil {
 			return nil, err
 		}
