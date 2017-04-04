@@ -2,7 +2,6 @@ package extensions
 
 import (
 	"os"
-	"os/exec"
 	"reflect"
 
 	log "github.com/Sirupsen/logrus"
@@ -26,44 +25,44 @@ const (
 
 // Watcher is the extension that watches for kubernetes services changes
 type Watcher struct {
-	config          *viper.Viper
 	tokenPerSec     float32 // Token per second on Token-Bucket algorithm
 	burst           int     // Bucket size on Token-Bucket algorithm
-	kubeConfig      *rest.Config
-	kubeClientSet   *kubernetes.Clientset
+	kubeClientSet   kubernetes.Interface
 	kubeDomainSufix string
 }
 
-// NewWatcher creates a new watcher instance
-func NewWatcher(config *viper.Viper) (*Watcher, error) {
-	w := &Watcher{
-		config: config,
+//NewWatcher creates a new watcher with chosen clientset
+//If clientset is nil, creates a inCluster clientset
+func NewWatcher(config *viper.Viper, clientset kubernetes.Interface) (*Watcher, error) {
+	w := &Watcher{}
+	w.configureProps(config)
+
+	if clientset == nil {
+		err := w.configureClient()
+		return w, err
 	}
-	w.loadConfigurationDefaults()
-	err := w.configure()
-	if err != nil {
-		return nil, err
-	}
+
+	w.kubeClientSet = clientset
 	return w, nil
 }
 
-func (w *Watcher) loadConfigurationDefaults() {
-}
-
-func (w *Watcher) configure() error {
+func (w *Watcher) configureProps(config *viper.Viper) {
 	key := "watcher.router-refresh-min-interval-s"
 	w.burst = 1
-	w.tokenPerSec = float32(w.burst) / float32(w.config.GetFloat64(key))
+	w.tokenPerSec = float32(w.burst) / float32(config.GetFloat64(key))
+	w.kubeDomainSufix = config.GetString("watcher.kubernetes-service-domain-sufix")
+}
 
-	var err error
-	w.kubeConfig, err = rest.InClusterConfig()
+func (w *Watcher) configureClient() error {
+	kubeConfig, err := rest.InClusterConfig()
 	if err != nil {
 		return err
 	}
 
-	w.kubeClientSet, err = kubernetes.NewForConfig(w.kubeConfig)
-
-	w.kubeDomainSufix = w.config.GetString("watcher.kubernetes-service-domain-sufix")
+	w.kubeClientSet, err = kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
@@ -87,16 +86,22 @@ func (w *Watcher) build() (*model.RouterConfig, error) {
 	routerConfig := model.NewRouterConfig()
 
 	for _, appService := range appServices.Items {
-		appConfig, err := model.BuildAppConfig(w.kubeClientSet, appService, routerConfig, w.kubeDomainSufix)
-		if err != nil {
-			return nil, err
-		}
-		if appConfig != nil {
-			routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
-		}
+		appConfig := model.BuildAppConfig(appService, w.kubeDomainSufix)
+		routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
 	}
 
 	return routerConfig, nil
+}
+
+//CreateConfigFile make nginx directory (if not exists) and create nginx config file.
+func (w *Watcher) CreateConfigFile() error {
+	err := os.MkdirAll(nginxConfigDir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	_, err = os.Create(nginxConfigFilePath)
+	return err
 }
 
 // Start starts the watcher, this call is blocking!
@@ -109,16 +114,7 @@ func (w *Watcher) Start() error {
 	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.burst)
 	known := &model.RouterConfig{}
 
-	err := os.MkdirAll(nginxConfigDir, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	err = exec.Command("touch", nginxConfigFilePath).Run()
-	if err != nil {
-		return err
-	}
-
-	err = nginx.Start(l)
+	err := nginx.Start(l)
 	if err != nil {
 		return err
 	}

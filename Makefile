@@ -10,3 +10,28 @@ build-docker: cross-build-linux-amd64
 
 run:
 	@go run main.go start --config ./config/local.yaml
+
+test: unit integration test-coverage-func
+
+unit: clear-coverage-profiles unit-run gather-unit-profiles
+
+clear-coverage-profiles:
+	@find . -name '*.coverprofile' -delete
+
+unit-run:
+	@ginkgo -cover -r -randomizeAllSpecs -randomizeSuites -skipMeasurements ${TEST_PACKAGES}
+
+gather-unit-profiles:
+	@mkdir -p _build
+	@echo "mode: count" > _build/coverage-unit.out
+	@bash -c 'for f in $$(find . -name "*.coverprofile"); do tail -n +2 $$f >> _build/coverage-unit.out; done'
+
+integration int: clear-coverage-profiles integration-run gather-integration-profiles
+
+integration-run:
+	@ginkgo -tags integration -cover -r -randomizeAllSpecs -randomizeSuites -skipMeasurements ${TEST_PACKAGES}
+
+gather-integration-profiles:
+	@mkdir -p _build
+	@echo "mode: count" > _build/coverage-integration.out
+	@bash -c 'for f in $$(find . -name "*.coverprofile"); do tail -n +2 $$f >> _build/coverage-integration.out; done'

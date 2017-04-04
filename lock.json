@@ -1,5 +1,5 @@
 {
-    "memo": "0f42fda155cefd448f210fc27ffcffd01105fc1e883c2403c3b34dc5dccbee33",
+    "memo": "3d4b3363073cacfba198f256dc8fb4832cc0fb99f890699a20b2c3af10ea9877",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -12,8 +12,8 @@
         },
         {
             "name": "github.com/Masterminds/semver",
-            "version": "v1.2.2",
-            "revision": "59c29afe1a994eacb71c833025ca7acf874bb1da",
+            "version": "v1.2.3",
+            "revision": "3f0ab6d4ab4bed1c61caf056b63a6e62190c7801",
             "packages": [
                 "."
             ]
@@ -183,7 +183,7 @@
         {
             "name": "github.com/golang/protobuf",
             "branch": "master",
-            "revision": "c9c7427a2a70d2eb3bafa0ab2dc163e45f143317",
+            "revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
             "packages": [
                 "proto"
             ]
@@ -271,6 +271,50 @@
             ]
         },
         {
+            "name": "github.com/onsi/ginkgo",
+            "version": "v1.3.1",
+            "revision": "77a8c1e5c40d6bb6c5eb4dd4bdce9763564f6298",
+            "packages": [
+                ".",
+                "config",
+                "internal/codelocation",
+                "internal/containernode",
+                "internal/failer",
+                "internal/leafnodes",
+                "internal/remote",
+                "internal/spec",
+                "internal/spec_iterator",
+                "internal/specrunner",
+                "internal/suite",
+                "internal/testingtproxy",
+                "internal/writer",
+                "reporters",
+                "reporters/stenographer",
+                "reporters/stenographer/support/go-colorable",
+                "reporters/stenographer/support/go-isatty",
+                "types"
+            ]
+        },
+        {
+            "name": "github.com/onsi/gomega",
+            "version": "v1.1.0",
+            "revision": "334b8f472b3af5d541c5642701c1e29e2126f486",
+            "packages": [
+                ".",
+                "format",
+                "internal/assertion",
+                "internal/asyncassertion",
+                "internal/oraclematcher",
+                "internal/testingtsupport",
+                "matchers",
+                "matchers/support/goraph/bipartitegraph",
+                "matchers/support/goraph/edge",
+                "matchers/support/goraph/node",
+                "matchers/support/goraph/util",
+                "types"
+            ]
+        },
+        {
             "name": "github.com/pborman/uuid",
             "version": "v1.0",
             "revision": "a97ce2ca70fa5a848076093f05e639a89ca34d06",
@@ -322,7 +366,7 @@
         {
             "name": "github.com/spf13/cobra",
             "branch": "master",
-            "revision": "7be4beda01ec05d0b93d80b3facd2b6f44080d94",
+            "revision": "7aeaa2cce6ae7e18d2a6ee597b60ee137e999bd9",
             "packages": [
                 "."
             ]
@@ -362,7 +406,7 @@
         {
             "name": "golang.org/x/crypto",
             "branch": "master",
-            "revision": "459e26527287adbc2adcc5d0d49abff9a5f315a7",
+            "revision": "573951cbe80bb6352881271bb276f48749eab6f4",
             "packages": [
                 "pbkdf2",
                 "scrypt"
@@ -398,7 +442,7 @@
         {
             "name": "golang.org/x/sys",
             "branch": "master",
-            "revision": "9a7256cb28ed514b4e1e5f68959914c4c28a92e0",
+            "revision": "493114f68206f85e7e333beccfabc11e98cba8dd",
             "packages": [
                 "unix"
             ]
@@ -406,7 +450,7 @@
         {
             "name": "golang.org/x/text",
             "branch": "master",
-            "revision": "fc7fa097411d30e6708badff276c4c164425590c",
+            "revision": "f4b4367115ec2de254587813edaa901bc1c723a8",
             "packages": [
                 "internal/gen",
                 "internal/triegen",
@@ -478,19 +522,33 @@
             "revision": "e121606b0d09b2e1c467183ee46217fa85a6b672",
             "packages": [
                 "discovery",
+                "discovery/fake",
                 "kubernetes",
+                "kubernetes/fake",
                 "kubernetes/typed/apps/v1beta1",
+                "kubernetes/typed/apps/v1beta1/fake",
                 "kubernetes/typed/authentication/v1beta1",
+                "kubernetes/typed/authentication/v1beta1/fake",
                 "kubernetes/typed/authorization/v1beta1",
+                "kubernetes/typed/authorization/v1beta1/fake",
                 "kubernetes/typed/autoscaling/v1",
+                "kubernetes/typed/autoscaling/v1/fake",
                 "kubernetes/typed/batch/v1",
+                "kubernetes/typed/batch/v1/fake",
                 "kubernetes/typed/batch/v2alpha1",
+                "kubernetes/typed/batch/v2alpha1/fake",
                 "kubernetes/typed/certificates/v1alpha1",
+                "kubernetes/typed/certificates/v1alpha1/fake",
                 "kubernetes/typed/core/v1",
+                "kubernetes/typed/core/v1/fake",
                 "kubernetes/typed/extensions/v1beta1",
+                "kubernetes/typed/extensions/v1beta1/fake",
                 "kubernetes/typed/policy/v1beta1",
+                "kubernetes/typed/policy/v1beta1/fake",
                 "kubernetes/typed/rbac/v1alpha1",
+                "kubernetes/typed/rbac/v1alpha1/fake",
                 "kubernetes/typed/storage/v1beta1",
+                "kubernetes/typed/storage/v1beta1/fake",
                 "pkg/api",
                 "pkg/api/errors",
                 "pkg/api/install",
@@ -579,6 +637,7 @@
                 "plugin/pkg/client/auth/gcp",
                 "plugin/pkg/client/auth/oidc",
                 "rest",
+                "testing",
                 "tools/clientcmd/api",
                 "tools/metrics",
                 "transport"

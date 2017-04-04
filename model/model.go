@@ -9,7 +9,6 @@ package model
 
 import (
 	"fmt"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api/v1"
 )
 
@@ -26,7 +25,6 @@ type RouterConfig struct {
 type AppConfig struct {
 	Domain    string
 	ServiceIP string
-	Available bool
 }
 
 //NewRouterConfig builds new router config with default values
@@ -41,18 +39,10 @@ func NewRouterConfig() *RouterConfig {
 	}
 }
 
-//BuildAppConfig builds AppConfig from kubeclient
-func BuildAppConfig(kubeClient *kubernetes.Clientset, service v1.Service, routerConfig *RouterConfig, kubeDomainSufix string) (*AppConfig, error) {
+//BuildAppConfig builds AppConfig from service
+func BuildAppConfig(service v1.Service, kubeDomainSufix string) *AppConfig {
 	appConfig := &AppConfig{}
-
 	appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSufix)
-
 	appConfig.ServiceIP = service.Spec.ClusterIP
-	endpointsClient := kubeClient.Endpoints(service.Namespace)
-	endpoints, err := endpointsClient.Get(service.Name)
-	if err != nil {
-		return nil, err
-	}
-	appConfig.Available = len(endpoints.Subsets) > 0 && len(endpoints.Subsets[0].Addresses) > 0
-	return appConfig, nil
+	return appConfig
 }
