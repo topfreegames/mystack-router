@@ -11,7 +11,6 @@ package extensions_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/spf13/afero"
 	. "github.com/topfreegames/mystack-router/extensions"
 	mystackTest "github.com/topfreegames/mystack-router/testing"
 
@@ -19,39 +18,25 @@ import (
 )
 
 var _ = Describe("Watcher", func() {
-
-	const (
-		nginxConfigDir      = "/etc/nginx"
-		nginxConfigFilePath = nginxConfigDir + "/nginx.conf"
-	)
+	var fakeClientset *fake.Clientset
+	var watcher *Watcher
+	var err error
 
 	BeforeEach(func() {
-		appFS := afero.NewOsFs()
-		appFS.MkdirAll(nginxConfigDir, 0777)
-		appFS.Create(nginxConfigFilePath)
+		fakeClientset = fake.NewSimpleClientset()
+		watcher, err = NewWatcher(config, fakeClientset)
+
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	Describe("NewWatcher", func() {
 		It("should construct a new watcher", func() {
-			fakeClientset := fake.NewSimpleClientset()
 			_, err := NewWatcher(config, fakeClientset)
-
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
 
 	Describe("GetMyStackServices", func() {
-		var fakeClientset *fake.Clientset
-		var watcher *Watcher
-		var err error
-
-		BeforeEach(func() {
-			fakeClientset = fake.NewSimpleClientset()
-			watcher, err = NewWatcher(config, fakeClientset)
-
-			Expect(err).NotTo(HaveOccurred())
-		})
-
 		It("should return empty list of services", func() {
 			services, err := watcher.GetMyStackServices()
 
@@ -66,6 +51,23 @@ var _ = Describe("Watcher", func() {
 			services, err := watcher.GetMyStackServices()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(services.Items).To(HaveLen(1))
+		})
+	})
+
+	Describe("Build", func() {
+		It("should create RouterConfig with empty AppConfigs", func() {
+			routerConfig, err := watcher.Build()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(routerConfig.AppConfigs).To(BeEmpty())
+		})
+
+		It("should have list with one element after create service", func() {
+			_, err = mystackTest.CreateService(fakeClientset)
+			Expect(err).NotTo(HaveOccurred())
+
+			routerConfig, err := watcher.Build()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(routerConfig.AppConfigs).To(HaveLen(1))
 		})
 	})
 })

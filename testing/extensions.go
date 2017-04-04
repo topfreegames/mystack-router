@@ -20,14 +20,14 @@ const (
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: test-deploy
+  name: test
   namespace: mystack-user
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: test-service
+        app: test
     spec:
       containers:
         - name: hello-world

@@ -9,7 +9,7 @@ package nginx
 
 import (
 	"github.com/Masterminds/sprig"
-	"github.com/topfreegames/mystack-router/model"
+	"github.com/topfreegames/mystack-router/models"
 	"os"
 	"text/template"
 )
@@ -45,7 +45,7 @@ http {
 `
 
 //WriteConfig writes a new nginx file config
-func WriteConfig(routerConfig *model.RouterConfig, filePath string) error {
+func WriteConfig(routerConfig *models.RouterConfig, filePath string) error {
 	tmpl, err := template.New("nginx").Funcs(sprig.TxtFuncMap()).Parse(configTemplate)
 	if err != nil {
 		return err

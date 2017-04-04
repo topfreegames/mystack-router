@@ -5,7 +5,7 @@
 // http://www.opensource.org/licenses/mit-license
 // Copyright © 2017 Top Free Games <backend@tfgco.com>
 
-package model
+package models
 
 import (
 	"fmt"
@@ -40,7 +40,7 @@ func NewRouterConfig() *RouterConfig {
 }
 
 //BuildAppConfig builds AppConfig from service
-func BuildAppConfig(service v1.Service, kubeDomainSufix string) *AppConfig {
+func BuildAppConfig(service *v1.Service, kubeDomainSufix string) *AppConfig {
 	appConfig := &AppConfig{}
 	appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSufix)
 	appConfig.ServiceIP = service.Spec.ClusterIP

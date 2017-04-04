@@ -21,7 +21,7 @@ import (
 	"k8s.io/client-go/pkg/util/flowcontrol"
 	"k8s.io/client-go/rest"
 
-	"github.com/topfreegames/mystack-router/model"
+	"github.com/topfreegames/mystack-router/models"
 	"github.com/topfreegames/mystack-router/nginx"
 )
 
@@ -86,16 +86,16 @@ func (w *Watcher) GetMyStackServices() (*v1.ServiceList, error) {
 }
 
 //Build construct the routerConfig of cluster
-func (w *Watcher) Build() (*model.RouterConfig, error) {
+func (w *Watcher) Build() (*models.RouterConfig, error) {
 	appServices, err := w.GetMyStackServices()
 	if err != nil {
 		return nil, err
 	}
 
-	routerConfig := model.NewRouterConfig()
+	routerConfig := models.NewRouterConfig()
 
 	for _, appService := range appServices.Items {
-		appConfig := model.BuildAppConfig(appService, w.kubeDomainSufix)
+		appConfig := models.BuildAppConfig(&appService, w.kubeDomainSufix)
 		routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
 	}
 
@@ -121,7 +121,7 @@ func (w *Watcher) Start() error {
 	})
 	l.Info("starting mystack watcher")
 	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.burst)
-	known := &model.RouterConfig{}
+	known := &models.RouterConfig{}
 
 	err := nginx.Start(l)
 	if err != nil {
