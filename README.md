@@ -4,8 +4,7 @@ mystack-router
 The router for mystack.
 
 ## About
-Discovers new services on Kubernetes cluster and creates routes on [Nginx](http://nginx.org) for your specific domain.
-
+This is the mystack router component, it will discover new services of apps deployed by mystack on Kubernetes cluster and creates routes on [Nginx](http://nginx.org) for your specific domain.
 The routes are filtered by namespace (one for each user) and service. 
 
 ## Dependencies
@@ -35,6 +34,9 @@ On project root, run (mind the dot):
 ```
 
 #### Create a yaml file for the router
+```
+kubectl create -f ./manifests
+```
 Supposing the following router.yaml file
 ```yaml
 apiVersion: v1
@@ -46,7 +48,8 @@ spec:
     app: mystack-router
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
+      targetPort: 8080
   type: LoadBalancer
 ---
 apiVersion: extensions/v1beta1
@@ -85,7 +88,9 @@ Then this service is reachable through mystack-router with:
   curl -v -H 'Host: hello-world.mystack-user.example.com' http://k8s_ip:8080
 ```
 
+#### Configure your domain
+
 If you have a domain with prefix `example.com` on the internet, you can point `*.example.com` to your mystack-router external-ip and access your service with:
 ```shell
-  curl -v hello-world.mystack-user.example.com:8080
+  curl -v hello-world.mystack-user.example.com
 ```
