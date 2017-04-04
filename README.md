@@ -38,23 +38,18 @@ On project root, run (mind the dot):
 kubectl create -f ./manifests
 ```
 
-#### Access your services
-Now, if there are services running on Kubernetes as ClusterIP, they are accessable through mystack-router.
-For example, given that:
-* There is a service running on namespace `mystack-user`
-* The service name is `hello-world`
-* The labels `mystack/routable: "true"` and `mystack/owner: user` are defined
-* The domain sufix is `example.com` (defined on config/local.yaml)
-* The Kubernetes IP is `k8s_ip`
-
-Then this service is reachable through mystack-router with:
+#### Configure your domain
+If you have the domain `yourdomain.com` registered, you can point `*.yourdomain.com` to your mystack-router loadbalancer external-ip and access your service with:
 ```shell
-  curl -v -H 'Host: hello-world.mystack-user.example.com' http://k8s_ip:8080
+curl -v {{appname}}.{{user}}.yourdomain.com
 ```
 
-#### Configure your domain
+#### Access your services
+Given that you've pointed `*.yourdomain.com` to the router's LB address, access a service with:
+```
+example:
+app: testapp
+user: test-user
 
-If you have a domain with prefix `example.com` on the internet, you can point `*.example.com` to your mystack-router external-ip and access your service with:
-```shell
-  curl -v hello-world.mystack-user.example.com
+curl testapp.test-user.yourdomain.com
 ```
