@@ -10,6 +10,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/mystack-router/extensions"
+	"github.com/topfreegames/mystack-router/models"
 )
 
 // startCmd represents the start command
@@ -27,7 +28,8 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		err = w.Start()
+		fs := models.NewRealFS()
+		err = w.Start(fs)
 		if err != nil {
 			panic(err)
 		}

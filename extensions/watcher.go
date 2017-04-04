@@ -114,7 +114,7 @@ func (w *Watcher) CreateConfigFile() error {
 }
 
 // Start starts the watcher, this call is blocking!
-func (w *Watcher) Start() error {
+func (w *Watcher) Start(fs models.FileSystem) error {
 	l := log.WithFields(log.Fields{
 		"tokenPerSecond": w.tokenPerSec,
 		"burst":          w.burst,
@@ -140,7 +140,7 @@ func (w *Watcher) Start() error {
 		if reflect.DeepEqual(routerConfig, known) {
 			continue
 		}
-		err = nginx.WriteConfig(routerConfig, nginxConfigFilePath)
+		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
 		if err != nil {
 			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)
 			continue
