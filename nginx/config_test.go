@@ -1,5 +1,4 @@
 // mystack
-// +build integration
 // https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
