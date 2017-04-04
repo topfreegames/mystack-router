@@ -1,5 +1,5 @@
 // mystack api
-// https://github.com/topfreegames/mystack
+// https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
 // http://www.opensource.org/licenses/mit-license
@@ -10,5 +10,5 @@ package main
 import "github.com/topfreegames/mystack-router/cmd"
 
 func main() {
-	cmd.Execute()
+	cmd.Execute(cmd.RootCmd)
 }

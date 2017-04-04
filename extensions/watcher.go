@@ -1,7 +1,9 @@
 package extensions
 
 import (
-	"time"
+	"os"
+	"os/exec"
+	"reflect"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -12,14 +14,24 @@ import (
 	"k8s.io/client-go/pkg/labels"
 	"k8s.io/client-go/pkg/util/flowcontrol"
 	"k8s.io/client-go/rest"
+
+	"github.com/topfreegames/mystack-router/model"
+	"github.com/topfreegames/mystack-router/nginx"
+)
+
+const (
+	nginxConfigDir      = "/etc/nginx"
+	nginxConfigFilePath = nginxConfigDir + "/nginx.conf"
 )
 
 // Watcher is the extension that watches for kubernetes services changes
 type Watcher struct {
-	config        *viper.Viper
-	interval      time.Duration
-	kubeConfig    *rest.Config
-	kubeClientSet *kubernetes.Clientset
+	config          *viper.Viper
+	tokenPerSec     float32 // Token per second on Token-Bucket algorithm
+	burst           int     // Bucket size on Token-Bucket algorithm
+	kubeConfig      *rest.Config
+	kubeClientSet   *kubernetes.Clientset
+	kubeDomainSufix string
 }
 
 // NewWatcher creates a new watcher instance
@@ -39,18 +51,25 @@ func (w *Watcher) loadConfigurationDefaults() {
 }
 
 func (w *Watcher) configure() error {
-	w.interval = time.Duration(w.config.GetInt("watcher.intervalms"))
+	key := "watcher.router-refresh-min-interval-s"
+	w.burst = 1
+	w.tokenPerSec = float32(w.burst) / float32(w.config.GetFloat64(key))
+
 	var err error
 	w.kubeConfig, err = rest.InClusterConfig()
 	if err != nil {
 		return err
 	}
+
 	w.kubeClientSet, err = kubernetes.NewForConfig(w.kubeConfig)
+
+	w.kubeDomainSufix = w.config.GetString("watcher.kubernetes-service-domain-sufix")
+
 	return err
 }
 
 func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
-	labelMap := labels.Set{"router.mystack/routable": "true"}
+	labelMap := labels.Set{"mystack/routable": "true"}
 	listOptions := v1.ListOptions{
 		LabelSelector: labelMap.AsSelector().String(),
 		FieldSelector: fields.Everything().String(),
@@ -59,20 +78,72 @@ func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
 	return services, err
 }
 
-// Start starts the watcher, this call is blocking!
-func (w *Watcher) Start() {
-	l := log.WithField("interval", w.interval)
-	l.Info("starting mystack watcher")
-	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(0.1, 1)
-	for {
-		rateLimiter.Accept()
-		services, err := w.getMyStackServices()
-		if err != nil {
-			log.Error(err)
-		} else {
-			log.WithField("services", services.Items).Info("got items")
-		}
-		time.Sleep(w.interval)
+func (w *Watcher) build() (*model.RouterConfig, error) {
+	appServices, err := w.getMyStackServices()
+	if err != nil {
+		return nil, err
 	}
 
+	routerConfig := model.NewRouterConfig()
+
+	for _, appService := range appServices.Items {
+		appConfig, err := model.BuildAppConfig(w.kubeClientSet, appService, routerConfig, w.kubeDomainSufix)
+		if err != nil {
+			return nil, err
+		}
+		if appConfig != nil {
+			routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
+		}
+	}
+
+	return routerConfig, nil
+}
+
+// Start starts the watcher, this call is blocking!
+func (w *Watcher) Start() error {
+	l := log.WithFields(log.Fields{
+		"tokenPerSecond": w.tokenPerSec,
+		"burst":          w.burst,
+	})
+	l.Info("starting mystack watcher")
+	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.burst)
+	known := &model.RouterConfig{}
+
+	err := os.MkdirAll(nginxConfigDir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	err = exec.Command("touch", nginxConfigFilePath).Run()
+	if err != nil {
+		return err
+	}
+
+	err = nginx.Start(l)
+	if err != nil {
+		return err
+	}
+
+	for {
+		rateLimiter.Accept()
+		routerConfig, err := w.build()
+		if err != nil {
+			return err
+		}
+		// Generate new RouterConfig with Build calling getMyStackServices
+		// If DeepEquals to known, call continue to loop
+		// else, calls reload and save new known
+		if reflect.DeepEqual(routerConfig, known) {
+			continue
+		}
+		err = nginx.WriteConfig(routerConfig, nginxConfigFilePath)
+		if err != nil {
+			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)
+			continue
+		}
+		err = nginx.Reload(l)
+		if err != nil {
+			return err
+		}
+		known = routerConfig
+	}
 }

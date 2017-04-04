@@ -1,5 +1,5 @@
-// mystack api
-// https://github.com/topfreegames/mystack
+// mystack-router api
+// https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
 // http://www.opensource.org/licenses/mit-license
@@ -8,6 +8,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/mystack-router/extensions"
 )
@@ -18,11 +19,16 @@ var startCmd = &cobra.Command{
 	Short: "starts mystack watcher",
 	Long:  `starts mystack watcher`,
 	Run: func(cmd *cobra.Command, args []string) {
+		InitConfig()
 		w, err := extensions.NewWatcher(config)
 		if err != nil {
 			panic(err)
 		}
-		w.Start()
+		err = w.Start()
+		if err != nil {
+			fmt.Println(err)
+			panic(err)
+		}
 	},
 }
 

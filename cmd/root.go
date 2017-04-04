@@ -1,5 +1,5 @@
 // mystack api
-// https://github.com/topfreegames/mystack
+// https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
 // http://www.opensource.org/licenses/mit-license
@@ -10,13 +10,24 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
 var config *viper.Viper
+
+// ConfigFile is the configuration file used for running a command
+var ConfigFile string
+
+// Execute runs RootCmd to initialize mystack CLI application
+func Execute(cmd *cobra.Command) {
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
+}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -25,33 +36,28 @@ var RootCmd = &cobra.Command{
 	Long:  `mystack watcher for kubernetes services that updates the ingress controller`,
 }
 
-// Execute adds all child commands to the root command sets flags appropriately.
-func Execute() {
-	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-}
-
 func init() {
-	cobra.OnInitialize(initConfig)
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "config/local.yaml", "config file (default is config/local.yaml)")
+	RootCmd.PersistentFlags().StringVarP(
+		&ConfigFile, "config", "c", "./config/local.yaml",
+		"config file (default is ./config/local.yaml)",
+	)
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
+// InitConfig reads in config file and ENV variables if set.
+func InitConfig() {
 	config = viper.New()
-	if cfgFile != "" {
-		config.SetConfigFile(cfgFile)
+	if ConfigFile != "" { // enable ability to specify config file via flag
+		config.SetConfigFile(ConfigFile)
 	}
-
-	config.SetConfigName("")
+	config.SetConfigType("yaml")
 	config.SetEnvPrefix("MYSTACK")
+	config.AddConfigPath(".")
+	config.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	config.AutomaticEnv()
-	fmt.Printf("olha env %s\n", config.GetString("ola"))
 
 	// If a config file is found, read it in.
-	if err := config.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", config.ConfigFileUsed())
+	if err := config.ReadInConfig(); err != nil {
+		fmt.Printf("Config file %s failed to load: %s.\n", ConfigFile, err.Error())
+		panic("Failed to load config file")
 	}
 }

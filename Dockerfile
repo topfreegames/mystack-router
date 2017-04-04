@@ -19,12 +19,13 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-FROM alpine
+FROM nginx
 
 MAINTAINER TFG Co <backend@tfgco.com>
 
 RUN mkdir /app
-ADD ./bin/mystack-router-linux-amd64 /app/mystack-router
+COPY ./bin/mystack-router-linux-amd64 /app/mystack-router
+COPY ./config/local.yaml /app/config/local.yaml
 
 WORKDIR /app
 
