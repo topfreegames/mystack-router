@@ -1,3 +1,10 @@
+// mystack
+// https://github.com/topfreegames/mystack-router
+//
+// Licensed under the MIT license:
+// http://www.opensource.org/licenses/mit-license
+// Copyright © 2017 Top Free Games <backend@tfgco.com>
+
 package extensions_test
 
 import (
@@ -18,8 +25,9 @@ func TestExtensions(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	configFile := "./config/test.yaml"
+	configFile := "../config/test.yaml"
 	config = viper.New()
+	config.SetConfigFile(configFile)
 	config.SetConfigType("yaml")
 	config.SetEnvPrefix("MYSTACK")
 	config.AddConfigPath(".")

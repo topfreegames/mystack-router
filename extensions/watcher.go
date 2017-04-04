@@ -1,3 +1,10 @@
+// mystack
+// https://github.com/topfreegames/mystack-router
+//
+// Licensed under the MIT license:
+// http://www.opensource.org/licenses/mit-license
+// Copyright © 2017 Top Free Games <backend@tfgco.com>
+
 package extensions
 
 import (
@@ -67,7 +74,8 @@ func (w *Watcher) configureClient() error {
 	return err
 }
 
-func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
+//GetMyStackServices return list of services running on k8s
+func (w *Watcher) GetMyStackServices() (*v1.ServiceList, error) {
 	labelMap := labels.Set{"mystack/routable": "true"}
 	listOptions := v1.ListOptions{
 		LabelSelector: labelMap.AsSelector().String(),
@@ -77,8 +85,9 @@ func (w *Watcher) getMyStackServices() (*v1.ServiceList, error) {
 	return services, err
 }
 
-func (w *Watcher) build() (*model.RouterConfig, error) {
-	appServices, err := w.getMyStackServices()
+//Build construct the routerConfig of cluster
+func (w *Watcher) Build() (*model.RouterConfig, error) {
+	appServices, err := w.GetMyStackServices()
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +130,7 @@ func (w *Watcher) Start() error {
 
 	for {
 		rateLimiter.Accept()
-		routerConfig, err := w.build()
+		routerConfig, err := w.Build()
 		if err != nil {
 			return err
 		}

@@ -25,6 +25,9 @@ _testmain.go
 *.test
 *.prof
 
+*.coverprofile
+_build
+
 # vim tmp files
 *.swp
 *.swo
