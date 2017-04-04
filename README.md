@@ -4,8 +4,7 @@ mystack-router
 The router for mystack.
 
 ## About
-Discovers new services on Kubernetes cluster and creates routes on [Nginx](http://nginx.org) for your specific domain.
-
+This is the mystack router component, it will discover new services of apps deployed by mystack on Kubernetes cluster and creates routes on [Nginx](http://nginx.org) for your specific domain.
 The routes are filtered by namespace (one for each user) and service. 
 
 ## Dependencies
@@ -35,57 +34,22 @@ On project root, run (mind the dot):
 ```
 
 #### Create a yaml file for the router
-Supposing the following router.yaml file
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: mystack-router
-spec:
-  selector:
-    app: mystack-router
-  ports:
-    - protocol: TCP
-      port: 8080
-  type: LoadBalancer
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: mystack-router
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: mystack-router
-    spec:
-      containers:
-        - name: mystack-router
-          image: dockerhub-user/mystack-router:v1
-          ports:
-            - containerPort: 8080
 ```
-Run it with:
+kubectl create -f ./manifests
+```
+
+#### Configure your domain
+If you have the domain `yourdomain.com` registered, you can point `*.yourdomain.com` to your mystack-router loadbalancer external-ip and access your service with:
 ```shell
-  kubectl create -f router.yaml
+curl -v {{appname}}.{{user}}.yourdomain.com
 ```
 
 #### Access your services
-Now, if there are services running on Kubernetes as ClusterIP, they are accessable through mystack-router.
-For example, given that:
-* There is a service running on namespace `mystack-user`
-* The service name is `hello-world`
-* The labels `mystack/routable: "true"` and `mystack/owner: user` are defined
-* The domain sufix is `example.com` (defined on config/local.yaml)
-* The Kubernetes IP is `k8s_ip`
-
-Then this service is reachable through mystack-router with:
-```shell
-  curl -v -H 'Host: hello-world.mystack-user.example.com' http://k8s_ip:8080
+Given that you've pointed `*.yourdomain.com` to the router's LB address, access a service with:
 ```
+example:
+app: testapp
+user: test-user
 
-If you have a domain with prefix `example.com` on the internet, you can point `*.example.com` to your mystack-router external-ip and access your service with:
-```shell
-  curl -v hello-world.mystack-user.example.com:8080
+curl testapp.test-user.yourdomain.com
 ```
