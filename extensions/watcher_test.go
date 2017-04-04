@@ -9,12 +9,13 @@
 package extensions_test
 
 import (
-	"github.com/spf13/afero"
-	. "github.com/topfreegames/mystack-router/extensions"
-	"k8s.io/client-go/kubernetes/fake"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/afero"
+	. "github.com/topfreegames/mystack-router/extensions"
+	mystackTest "github.com/topfreegames/mystack-router/testing"
+
+	"k8s.io/client-go/kubernetes/fake"
 )
 
 var _ = Describe("Watcher", func() {
@@ -40,11 +41,12 @@ var _ = Describe("Watcher", func() {
 	})
 
 	Describe("GetMyStackServices", func() {
+		var fakeClientset *fake.Clientset
 		var watcher *Watcher
 		var err error
 
 		BeforeEach(func() {
-			fakeClientset := fake.NewSimpleClientset()
+			fakeClientset = fake.NewSimpleClientset()
 			watcher, err = NewWatcher(config, fakeClientset)
 
 			Expect(err).NotTo(HaveOccurred())
@@ -55,6 +57,15 @@ var _ = Describe("Watcher", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(services.Items).To(BeEmpty())
+		})
+
+		It("should return list with one element after create service", func() {
+			_, err = mystackTest.CreateService(fakeClientset)
+			Expect(err).NotTo(HaveOccurred())
+
+			services, err := watcher.GetMyStackServices()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(services.Items).To(HaveLen(1))
 		})
 	})
 })
