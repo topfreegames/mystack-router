@@ -37,42 +37,6 @@ On project root, run (mind the dot):
 ```
 kubectl create -f ./manifests
 ```
-Supposing the following router.yaml file
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: mystack-router
-spec:
-  selector:
-    app: mystack-router
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: LoadBalancer
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: mystack-router
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: mystack-router
-    spec:
-      containers:
-        - name: mystack-router
-          image: dockerhub-user/mystack-router:v1
-          ports:
-            - containerPort: 8080
-```
-Run it with:
-```shell
-  kubectl create -f router.yaml
-```
 
 #### Access your services
 Now, if there are services running on Kubernetes as ClusterIP, they are accessable through mystack-router.
