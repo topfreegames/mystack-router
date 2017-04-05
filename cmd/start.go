@@ -8,9 +8,9 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/mystack-router/extensions"
+	"github.com/topfreegames/mystack-router/models"
 )
 
 // startCmd represents the start command
@@ -20,13 +20,17 @@ var startCmd = &cobra.Command{
 	Long:  `starts mystack watcher`,
 	Run: func(cmd *cobra.Command, args []string) {
 		InitConfig()
-		w, err := extensions.NewWatcher(config)
+		w, err := extensions.NewWatcher(config, nil)
 		if err != nil {
 			panic(err)
 		}
-		err = w.Start()
+		err = w.CreateConfigFile()
 		if err != nil {
-			fmt.Println(err)
+			panic(err)
+		}
+		fs := models.NewRealFS()
+		err = w.Start(fs)
+		if err != nil {
 			panic(err)
 		}
 	},

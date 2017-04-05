@@ -44,3 +44,16 @@ func Reload(logger logrus.FieldLogger) error {
 	logger.Info("nginx successfully started")
 	return nil
 }
+
+//AssertConfig tests config file for correct syntax
+func AssertConfig(filePath string, logger logrus.FieldLogger) error {
+	cmd := exec.Command("nginx", "-t", "-c", filePath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	logger.Info("correct nginx config file")
+	return nil
+}
