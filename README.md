@@ -1,5 +1,6 @@
 mystack-router
 ==============
+[![Build Status](https://travis-ci.org/topfreegames/mystack-router.svg?branch=master)](https://travis-ci.org/topfreegames/mystack-router)
 
 The router for mystack.
 
