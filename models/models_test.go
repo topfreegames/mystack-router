@@ -44,7 +44,7 @@ var _ = Describe("Model", func() {
 			Expect(service.Name).To(Equal("test"))
 			//Expect(service.Spec.ClusterIP).NotTo(BeEmpty())
 
-			appConfig := models.BuildAppConfig(service, "example.com")
+			appConfig := models.BuildAppConfig(service, "example.com", "mystack.controller.com", "mystack.logger.com")
 			Expect(appConfig.Domain).To(Equal("test.mystack-user.example.com"))
 		})
 	})

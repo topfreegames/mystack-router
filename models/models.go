@@ -40,9 +40,28 @@ func NewRouterConfig() *RouterConfig {
 }
 
 //BuildAppConfig builds AppConfig from service
-func BuildAppConfig(service *v1.Service, kubeDomainSufix string) *AppConfig {
+func BuildAppConfig(
+	service *v1.Service,
+	kubeDomainSufix string,
+	kubeControllerDomain string,
+	kubeLoggerDomain string,
+) *AppConfig {
 	appConfig := &AppConfig{}
-	appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSufix)
+
+	contains := func(key string) bool {
+		flag, ok := service.ObjectMeta.Labels[key]
+		return ok && flag == "true"
+	}
+
+	switch {
+	case contains("mystack/controller"):
+		appConfig.Domain = kubeControllerDomain
+	case contains("mystack/logger"):
+		appConfig.Domain = kubeLoggerDomain
+	default:
+		appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSufix)
+	}
+
 	appConfig.ServiceIP = service.Spec.ClusterIP
 	return appConfig
 }

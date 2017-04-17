@@ -8,27 +8,10 @@
 package nginx
 
 import (
-	"fmt"
 	"github.com/Sirupsen/logrus"
 	"os"
 	"os/exec"
 )
-
-//Start starts nginx
-func Start(logger logrus.FieldLogger) error {
-	logger.Info("starting nginx")
-
-	cmd := exec.Command("nginx")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Start(); err != nil {
-		fmt.Println("Nginx exec error:", err)
-		return err
-	}
-
-	logger.Info("nginx successfully started")
-	return nil
-}
 
 //Reload reloads nginx
 func Reload(logger logrus.FieldLogger) error {
@@ -38,6 +21,7 @@ func Reload(logger logrus.FieldLogger) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
+		logger.Fatal("Nginx exec error:", err)
 		return err
 	}
 
@@ -51,6 +35,7 @@ func AssertConfig(filePath string, logger logrus.FieldLogger) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
+		logger.Fatal("Nginx exec error:", err)
 		return err
 	}
 

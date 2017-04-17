@@ -32,10 +32,12 @@ const (
 
 // Watcher is the extension that watches for kubernetes services changes
 type Watcher struct {
-	tokenPerSec     float32 // Token per second on Token-Bucket algorithm
-	burst           int     // Bucket size on Token-Bucket algorithm
-	kubeClientSet   kubernetes.Interface
-	kubeDomainSufix string
+	tokenPerSec          float32 // Token per second on Token-Bucket algorithm
+	burst                int     // Bucket size on Token-Bucket algorithm
+	kubeClientSet        kubernetes.Interface
+	kubeDomainSufix      string
+	kubeControllerDomain string
+	kubeLoggerDomain     string
 }
 
 //NewWatcher creates a new watcher with chosen clientset
@@ -58,6 +60,8 @@ func (w *Watcher) configureProps(config *viper.Viper) {
 	w.burst = 1
 	w.tokenPerSec = float32(w.burst) / float32(config.GetFloat64(key))
 	w.kubeDomainSufix = config.GetString("watcher.kubernetes-service-domain-sufix")
+	w.kubeControllerDomain = config.GetString("watcher.mystack-controller-domain")
+	w.kubeLoggerDomain = config.GetString("watcher.mystack-logger-domain")
 }
 
 func (w *Watcher) configureClient() error {
@@ -95,7 +99,7 @@ func (w *Watcher) Build() (*models.RouterConfig, error) {
 	routerConfig := models.NewRouterConfig()
 
 	for _, appService := range appServices.Items {
-		appConfig := models.BuildAppConfig(&appService, w.kubeDomainSufix)
+		appConfig := models.BuildAppConfig(&appService, w.kubeDomainSufix, w.kubeControllerDomain, w.kubeLoggerDomain)
 		routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
 	}
 
@@ -123,12 +127,8 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.burst)
 	known := &models.RouterConfig{}
 
-	err := nginx.Start(l)
-	if err != nil {
-		return err
-	}
-
 	for {
+		l.Info("new loop started")
 		rateLimiter.Accept()
 		routerConfig, err := w.Build()
 		if err != nil {
@@ -140,6 +140,7 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 		if reflect.DeepEqual(routerConfig, known) {
 			continue
 		}
+		l.Info("new config found")
 		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
 		if err != nil {
 			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)
@@ -149,6 +150,8 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 		if err != nil {
 			return err
 		}
+		l.Info("nginx reloaded")
+		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
 		known = routerConfig
 	}
 }
