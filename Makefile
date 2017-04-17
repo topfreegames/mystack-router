@@ -37,6 +37,7 @@ setup-ci:
 	@go get -u github.com/golang/dep/...
 	@go get github.com/onsi/ginkgo/ginkgo
 	@go get github.com/wadey/gocovmerge
+	@dep init
 	@dep ensure
 
 test: unit integration test-coverage-func
