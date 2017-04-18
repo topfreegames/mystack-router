@@ -30,7 +30,10 @@ http {
 		server_name {{.Domain}};
 
 		location / {
-			proxy_pass http://{{.ServiceIP}}:80;
+			{{$ip := .ServiceIP}}
+			{{range .Ports}}
+			proxy_pass http://{{$ip}}:{{.}};
+			{{end}}
 		}
 	}
 	{{end}}	

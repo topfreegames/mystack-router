@@ -25,6 +25,7 @@ type RouterConfig struct {
 type AppConfig struct {
 	Domain    string
 	ServiceIP string
+	Ports     []int
 }
 
 //NewRouterConfig builds new router config with default values
@@ -63,5 +64,12 @@ func BuildAppConfig(
 	}
 
 	appConfig.ServiceIP = service.Spec.ClusterIP
+
+	ports := make([]int, len(service.Spec.Ports))
+	for i, port := range service.Spec.Ports {
+		ports[i] = int(port.Port)
+	}
+	appConfig.Ports = ports
+
 	return appConfig
 }
