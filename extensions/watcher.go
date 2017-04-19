@@ -128,7 +128,6 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 	known := &models.RouterConfig{}
 
 	for {
-		l.Info("new loop started")
 		rateLimiter.Accept()
 		routerConfig, err := w.Build()
 		if err != nil {
