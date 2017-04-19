@@ -42,10 +42,29 @@ var _ = Describe("Model", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(service.Namespace).To(Equal("mystack-user"))
 			Expect(service.Name).To(Equal("test"))
-			//Expect(service.Spec.ClusterIP).NotTo(BeEmpty())
 
-			appConfig := models.BuildAppConfig(service, "example.com")
+			appConfig := models.BuildAppConfig(service, "example.com", "controller.mystack.com", "logger.mystack.com")
 			Expect(appConfig.Domain).To(Equal("test.mystack-user.example.com"))
+		})
+
+		It("should create correct domain for controller", func() {
+			controller, err := mystackTest.CreateController(fakeClientset)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(controller.Namespace).To(Equal("mystack"))
+			Expect(controller.Name).To(Equal("controller"))
+
+			appConfig := models.BuildAppConfig(controller, "example.com", "controller.mystack.com", "logger.mystack.com")
+			Expect(appConfig.Domain).To(Equal("controller.mystack.com"))
+		})
+
+		It("should create correct domain for logger", func() {
+			logger, err := mystackTest.CreateLogger(fakeClientset)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(logger.Namespace).To(Equal("mystack"))
+			Expect(logger.Name).To(Equal("logger"))
+
+			appConfig := models.BuildAppConfig(logger, "example.com", "controller.mystack.com", "logger.mystack.com")
+			Expect(appConfig.Domain).To(Equal("logger.mystack.com"))
 		})
 	})
 })

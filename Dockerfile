@@ -19,7 +19,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-FROM nginx
+FROM nginx:1.11
 
 MAINTAINER TFG Co <backend@tfgco.com>
 
@@ -29,4 +29,4 @@ COPY ./config/local.yaml /app/config/local.yaml
 
 WORKDIR /app
 
-CMD /app/mystack-router start
+CMD nginx && /app/mystack-router start 
