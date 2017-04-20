@@ -15,29 +15,21 @@ import (
 
 const configTemplate = `
 worker_processes {{.WorkerProcesses}};
-
 events {
 	worker_connections {{.MaxWorkerConnections}};
 }
-
 http {
 	server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
 	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
-
-	{{range .AppConfigs}}
+	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
 	server {
 		listen 8080;
-		server_name {{.Domain}};
-
+		server_name {{$domain}};
 		location / {
-			{{$ip := .ServiceIP}}
-			{{range .Ports}}
-			proxy_pass http://{{$ip}}:{{.}};
-			{{end}}
+			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
 	}
-	{{end}}	
-
+	{{end}}{{end}}	
   server {
     listen 8080 default_server;
     server_name _;
