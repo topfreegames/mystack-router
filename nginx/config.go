@@ -23,7 +23,7 @@ http {
 	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
 	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
 	server {
-		listen 8080;
+		listen 80;
 		server_name {{$domain}};
 		location / {
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
@@ -31,7 +31,7 @@ http {
 	}
 	{{end}}{{end}}	
   server {
-    listen 8080 default_server;
+    listen 80 default_server;
     server_name _;
     return 404;
   }
