@@ -8,6 +8,7 @@
 package extensions
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 
@@ -126,6 +127,12 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 	l.Info("starting mystack watcher")
 	rateLimiter := flowcontrol.NewTokenBucketRateLimiter(w.tokenPerSec, w.burst)
 	known := &models.RouterConfig{}
+
+	// Remove this dir because it overwrites our conf if exists
+	err := os.RemoveAll(fmt.Sprintf("%s/conf.d", nginxConfigDir))
+	if err != nil {
+		return err
+	}
 
 	for {
 		rateLimiter.Accept()

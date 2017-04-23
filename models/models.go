@@ -23,9 +23,10 @@ type RouterConfig struct {
 
 // AppConfig encapsulates the configuration for all routes to a single back end.
 type AppConfig struct {
-	Domain    string
-	ServiceIP string
-	Ports     []int
+	Domain       string
+	AppName      string
+	AppNamespace string
+	Ports        []int
 }
 
 //NewRouterConfig builds new router config with default values
@@ -63,7 +64,8 @@ func BuildAppConfig(
 		appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSufix)
 	}
 
-	appConfig.ServiceIP = service.Spec.ClusterIP
+	appConfig.AppName = service.ObjectMeta.GetName()
+	appConfig.AppNamespace = service.ObjectMeta.GetNamespace()
 
 	ports := make([]int, len(service.Spec.Ports))
 	for i, port := range service.Spec.Ports {
