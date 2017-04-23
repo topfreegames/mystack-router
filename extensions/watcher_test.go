@@ -10,30 +10,11 @@ package extensions_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/topfreegames/mystack-router/extensions"
 	mystackTest "github.com/topfreegames/mystack-router/testing"
-
-	"k8s.io/client-go/kubernetes/fake"
 )
 
 var _ = Describe("Watcher", func() {
-	var fakeClientset *fake.Clientset
-	var watcher *Watcher
 	var err error
-
-	BeforeEach(func() {
-		fakeClientset = fake.NewSimpleClientset()
-		watcher, err = NewWatcher(config, fakeClientset)
-
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	Describe("NewWatcher", func() {
-		It("should construct a new watcher", func() {
-			_, err := NewWatcher(config, fakeClientset)
-			Expect(err).NotTo(HaveOccurred())
-		})
-	})
 
 	Describe("GetMyStackServices", func() {
 		It("should return empty list of services", func() {
@@ -44,7 +25,7 @@ var _ = Describe("Watcher", func() {
 		})
 
 		It("should return list with one element after create service", func() {
-			_, err = mystackTest.CreateService(fakeClientset)
+			_, err = mystackTest.CreateService(clientset)
 			Expect(err).NotTo(HaveOccurred())
 
 			services, err := watcher.GetMyStackServices()
@@ -61,7 +42,7 @@ var _ = Describe("Watcher", func() {
 		})
 
 		It("should have list with one element after create service", func() {
-			_, err = mystackTest.CreateService(fakeClientset)
+			_, err = mystackTest.CreateService(clientset)
 			Expect(err).NotTo(HaveOccurred())
 
 			routerConfig, err := watcher.Build()

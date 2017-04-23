@@ -22,6 +22,7 @@ import (
 	"k8s.io/client-go/pkg/util/flowcontrol"
 	"k8s.io/client-go/rest"
 
+	_ "github.com/lib/pq"
 	"github.com/topfreegames/mystack-router/models"
 	"github.com/topfreegames/mystack-router/nginx"
 )
@@ -33,12 +34,10 @@ const (
 
 // Watcher is the extension that watches for kubernetes services changes
 type Watcher struct {
-	tokenPerSec          float32 // Token per second on Token-Bucket algorithm
-	burst                int     // Bucket size on Token-Bucket algorithm
-	kubeClientSet        kubernetes.Interface
-	kubeDomainSufix      string
-	kubeControllerDomain string
-	kubeLoggerDomain     string
+	tokenPerSec      float32 // Token per second on Token-Bucket algorithm
+	burst            int     // Bucket size on Token-Bucket algorithm
+	kubeClientSet    kubernetes.Interface
+	kubeDomainSuffix string
 }
 
 //NewWatcher creates a new watcher with chosen clientset
@@ -46,7 +45,6 @@ type Watcher struct {
 func NewWatcher(config *viper.Viper, clientset kubernetes.Interface) (*Watcher, error) {
 	w := &Watcher{}
 	w.configureProps(config)
-
 	if clientset == nil {
 		err := w.configureClient()
 		return w, err
@@ -60,9 +58,7 @@ func (w *Watcher) configureProps(config *viper.Viper) {
 	key := "watcher.router-refresh-min-interval-s"
 	w.burst = 1
 	w.tokenPerSec = float32(w.burst) / float32(config.GetFloat64(key))
-	w.kubeDomainSufix = config.GetString("watcher.kubernetes-service-domain-sufix")
-	w.kubeControllerDomain = config.GetString("watcher.mystack-controller-domain")
-	w.kubeLoggerDomain = config.GetString("watcher.mystack-logger-domain")
+	w.kubeDomainSuffix = config.GetString("kubernetes.service-domain-suffix")
 }
 
 func (w *Watcher) configureClient() error {
@@ -97,10 +93,12 @@ func (w *Watcher) Build() (*models.RouterConfig, error) {
 		return nil, err
 	}
 
-	routerConfig := models.NewRouterConfig()
-
+	routerConfig := models.NewRouterConfig(w.kubeDomainSuffix)
 	for _, appService := range appServices.Items {
-		appConfig := models.BuildAppConfig(&appService, w.kubeDomainSufix, w.kubeControllerDomain, w.kubeLoggerDomain)
+		appConfig := models.BuildAppConfig(
+			&appService,
+			w.kubeDomainSuffix,
+		)
 		routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
 	}
 
@@ -147,6 +145,10 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 			continue
 		}
 		l.Info("new config found")
+		if err != nil {
+			log.Printf("Failed to get custom domains: %v", err)
+			continue
+		}
 		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
 		if err != nil {
 			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)

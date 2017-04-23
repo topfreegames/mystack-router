@@ -8,9 +8,13 @@
 package models
 
 import (
-	"github.com/spf13/afero"
 	"os"
+
+	"github.com/spf13/afero"
 )
+
+//DomainsPerApp holds the custom domains for each app or service
+type DomainsPerApp map[string][]string
 
 //FileSystem interface
 type FileSystem interface {
