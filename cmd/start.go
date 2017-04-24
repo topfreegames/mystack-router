@@ -29,7 +29,7 @@ var startCmd = &cobra.Command{
 			panic(err)
 		}
 		fs := models.NewRealFS()
-		err = w.Start(fs)
+		err = w.Start(fs, &models.CustomDomains{})
 		if err != nil {
 			panic(err)
 		}

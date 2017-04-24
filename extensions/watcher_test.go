@@ -11,6 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/topfreegames/mystack-router/extensions"
+	"github.com/topfreegames/mystack-router/models"
 	mystackTest "github.com/topfreegames/mystack-router/testing"
 
 	"k8s.io/client-go/kubernetes/fake"
@@ -55,7 +56,8 @@ var _ = Describe("Watcher", func() {
 
 	Describe("Build", func() {
 		It("should create RouterConfig with empty AppConfigs", func() {
-			routerConfig, err := watcher.Build()
+			customDomains := &models.MockCustomDomains{}
+			routerConfig, err := watcher.Build(customDomains)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(routerConfig.AppConfigs).To(BeEmpty())
 		})
@@ -64,7 +66,9 @@ var _ = Describe("Watcher", func() {
 			_, err = mystackTest.CreateService(fakeClientset)
 			Expect(err).NotTo(HaveOccurred())
 
-			routerConfig, err := watcher.Build()
+			customDomains := &models.MockCustomDomains{}
+
+			routerConfig, err := watcher.Build(customDomains)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(routerConfig.AppConfigs).To(HaveLen(1))
 		})

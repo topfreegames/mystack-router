@@ -23,10 +23,11 @@ type RouterConfig struct {
 
 // AppConfig encapsulates the configuration for all routes to a single back end.
 type AppConfig struct {
-	Domain       string
-	AppName      string
-	AppNamespace string
-	Ports        []int
+	Domain        string
+	CustomDomains []string
+	AppName       string
+	AppNamespace  string
+	Ports         []int
 }
 
 //NewRouterConfig builds new router config with default values
@@ -47,8 +48,11 @@ func BuildAppConfig(
 	kubeDomainSufix string,
 	kubeControllerDomain string,
 	kubeLoggerDomain string,
+	customDomains []string,
 ) *AppConfig {
-	appConfig := &AppConfig{}
+	appConfig := &AppConfig{
+		CustomDomains: customDomains,
+	}
 
 	contains := func(key string) bool {
 		flag, ok := service.ObjectMeta.Labels[key]

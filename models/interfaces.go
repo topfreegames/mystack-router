@@ -12,8 +12,16 @@ import (
 	"os"
 )
 
+//DomainsPerApp holds the custom domains for each app or service
+type DomainsPerApp map[string][]string
+
 //FileSystem interface
 type FileSystem interface {
 	MkdirAll(path string, perm os.FileMode) error
 	Create(name string) (afero.File, error)
+}
+
+//CustomDomains interface
+type CustomDomainsInterface interface {
+	GetCustomDomains(controllerDomain, clusterName string) (DomainsPerApp, error)
 }

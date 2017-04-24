@@ -91,20 +91,52 @@ func (w *Watcher) GetMyStackServices() (*v1.ServiceList, error) {
 }
 
 //Build construct the routerConfig of cluster
-func (w *Watcher) Build() (*models.RouterConfig, error) {
+func (w *Watcher) Build(c models.CustomDomainsInterface) (*models.RouterConfig, error) {
 	appServices, err := w.GetMyStackServices()
 	if err != nil {
 		return nil, err
 	}
 
 	routerConfig := models.NewRouterConfig()
+	customDomainsPerCluster := make(map[string]models.DomainsPerApp)
 
 	for _, appService := range appServices.Items {
-		appConfig := models.BuildAppConfig(&appService, w.kubeDomainSufix, w.kubeControllerDomain, w.kubeLoggerDomain)
+		clusterName := appService.ObjectMeta.Labels["mystack/cluster"]
+		customDomains, err := customDomainsForCluster(w.kubeControllerDomain, clusterName, customDomainsPerCluster, c)
+		if err != nil {
+			return nil, err
+		}
+
+		appConfig := models.BuildAppConfig(
+			&appService,
+			w.kubeDomainSufix,
+			w.kubeControllerDomain,
+			w.kubeLoggerDomain,
+			customDomains[appService.GetName()],
+		)
 		routerConfig.AppConfigs = append(routerConfig.AppConfigs, appConfig)
 	}
 
 	return routerConfig, nil
+}
+
+func customDomainsForCluster(
+	controllerDomain string,
+	clusterName string,
+	customDomainsPerCluster map[string]models.DomainsPerApp,
+	c models.CustomDomainsInterface,
+) (models.DomainsPerApp, error) {
+	if customDomains, ok := customDomainsPerCluster[clusterName]; ok {
+		return customDomains, nil
+	}
+
+	customDomains, err := c.GetCustomDomains(controllerDomain, clusterName)
+	if err != nil {
+		return nil, err
+	}
+	customDomainsPerCluster[clusterName] = customDomains
+
+	return customDomains, nil
 }
 
 //CreateConfigFile make nginx directory (if not exists) and create nginx config file.
@@ -119,7 +151,7 @@ func (w *Watcher) CreateConfigFile() error {
 }
 
 // Start starts the watcher, this call is blocking!
-func (w *Watcher) Start(fs models.FileSystem) error {
+func (w *Watcher) Start(fs models.FileSystem, c models.CustomDomainsInterface) error {
 	l := log.WithFields(log.Fields{
 		"tokenPerSecond": w.tokenPerSec,
 		"burst":          w.burst,
@@ -136,7 +168,7 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 
 	for {
 		rateLimiter.Accept()
-		routerConfig, err := w.Build()
+		routerConfig, err := w.Build(c)
 		if err != nil {
 			return err
 		}

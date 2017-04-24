@@ -43,7 +43,13 @@ var _ = Describe("Model", func() {
 			Expect(service.Namespace).To(Equal("mystack-user"))
 			Expect(service.Name).To(Equal("test"))
 
-			appConfig := models.BuildAppConfig(service, "example.com", "controller.mystack.com", "logger.mystack.com")
+			appConfig := models.BuildAppConfig(
+				service,
+				"example.com",
+				"controller.mystack.com",
+				"logger.mystack.com",
+				[]string{},
+			)
 			Expect(appConfig.Domain).To(Equal("test.mystack-user.example.com"))
 		})
 
@@ -53,7 +59,13 @@ var _ = Describe("Model", func() {
 			Expect(controller.Namespace).To(Equal("mystack"))
 			Expect(controller.Name).To(Equal("controller"))
 
-			appConfig := models.BuildAppConfig(controller, "example.com", "controller.mystack.com", "logger.mystack.com")
+			appConfig := models.BuildAppConfig(
+				controller,
+				"example.com",
+				"controller.mystack.com",
+				"logger.mystack.com",
+				[]string{},
+			)
 			Expect(appConfig.Domain).To(Equal("controller.mystack.com"))
 		})
 
@@ -63,7 +75,13 @@ var _ = Describe("Model", func() {
 			Expect(logger.Namespace).To(Equal("mystack"))
 			Expect(logger.Name).To(Equal("logger"))
 
-			appConfig := models.BuildAppConfig(logger, "example.com", "controller.mystack.com", "logger.mystack.com")
+			appConfig := models.BuildAppConfig(
+				logger,
+				"example.com",
+				"controller.mystack.com",
+				"logger.mystack.com",
+				[]string{},
+			)
 			Expect(appConfig.Domain).To(Equal("logger.mystack.com"))
 		})
 	})
