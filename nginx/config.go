@@ -26,7 +26,7 @@ http {
 	server {
 		listen 80;
 		server_name {{$domain}};
-		{{range $domain := $customDomains}}server_name {{$domain}}{{end}};
+		{{range $domain := $customDomains}}server_name {{$domain}};{{end}}
 		location / {
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}

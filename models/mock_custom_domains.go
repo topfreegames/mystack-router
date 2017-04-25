@@ -7,12 +7,19 @@
 
 package models
 
+import "k8s.io/client-go/kubernetes"
+
 //MockCustomDomains implements CustomDomainsInterface interface
 type MockCustomDomains struct {
-	CustomDomains DomainsPerApp
-	Err           error
+	CustomDomains         DomainsPerApp
+	Err                   error
+	ControllerServiceName string
 }
 
 func (m *MockCustomDomains) GetCustomDomains(controllerDomain, clusterName string) (DomainsPerApp, error) {
 	return m.CustomDomains, m.Err
+}
+
+func (m *MockCustomDomains) GetControllerServiceName(clientset kubernetes.Interface) (string, error) {
+	return m.ControllerServiceName, m.Err
 }

@@ -97,12 +97,17 @@ func (w *Watcher) Build(c models.CustomDomainsInterface) (*models.RouterConfig, 
 		return nil, err
 	}
 
+	controllerServiceName, err := c.GetControllerServiceName(w.kubeClientSet)
+	if err != nil {
+		return nil, err
+	}
+
 	routerConfig := models.NewRouterConfig()
 	customDomainsPerCluster := make(map[string]models.DomainsPerApp)
 
 	for _, appService := range appServices.Items {
 		clusterName := appService.ObjectMeta.Labels["mystack/cluster"]
-		customDomains, err := customDomainsForCluster(w.kubeControllerDomain, clusterName, customDomainsPerCluster, c)
+		customDomains, err := customDomainsForCluster(controllerServiceName, clusterName, customDomainsPerCluster, c)
 		if err != nil {
 			return nil, err
 		}

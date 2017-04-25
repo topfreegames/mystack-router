@@ -8,8 +8,10 @@
 package models
 
 import (
-	"github.com/spf13/afero"
 	"os"
+
+	"github.com/spf13/afero"
+	"k8s.io/client-go/kubernetes"
 )
 
 //DomainsPerApp holds the custom domains for each app or service
@@ -24,4 +26,5 @@ type FileSystem interface {
 //CustomDomains interface
 type CustomDomainsInterface interface {
 	GetCustomDomains(controllerDomain, clusterName string) (DomainsPerApp, error)
+	GetControllerServiceName(kubernetes.Interface) (string, error)
 }

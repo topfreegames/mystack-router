@@ -1,5 +1,5 @@
 watcher:
   router-refresh-min-interval-s: 10
-  kubernetes-service-domain-sufix: mystack.com
-  mystack-controller-domain: controller.mystack.com
-  mystack-logger-domain: logger.mystack.com
+  kubernetes-service-domain-sufix: minitfg.com
+  mystack-controller-domain: controller.minitfg.com
+  mystack-logger-domain: logger.minitfg.com

@@ -56,7 +56,9 @@ var _ = Describe("Watcher", func() {
 
 	Describe("Build", func() {
 		It("should create RouterConfig with empty AppConfigs", func() {
-			customDomains := &models.MockCustomDomains{}
+			customDomains := &models.MockCustomDomains{
+				ControllerServiceName: "mystack-controller",
+			}
 			routerConfig, err := watcher.Build(customDomains)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(routerConfig.AppConfigs).To(BeEmpty())
@@ -66,7 +68,9 @@ var _ = Describe("Watcher", func() {
 			_, err = mystackTest.CreateService(fakeClientset)
 			Expect(err).NotTo(HaveOccurred())
 
-			customDomains := &models.MockCustomDomains{}
+			customDomains := &models.MockCustomDomains{
+				ControllerServiceName: "mystack-controller",
+			}
 
 			routerConfig, err := watcher.Build(customDomains)
 			Expect(err).NotTo(HaveOccurred())
