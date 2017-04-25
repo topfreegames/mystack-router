@@ -17,9 +17,11 @@ import (
 )
 
 var _ = Describe("Model", func() {
+	var domain string = "mystack.com"
+
 	Describe("NewRouterConfig", func() {
 		It("should construct new RouterConfig", func() {
-			routerConfig := models.NewRouterConfig()
+			routerConfig := models.NewRouterConfig(domain)
 			Expect(routerConfig.WorkerProcesses).NotTo(BeEmpty())
 			Expect(routerConfig.MaxWorkerConnections).NotTo(BeEmpty())
 			Expect(routerConfig.ServerNamesHashMaxSize).NotTo(BeEmpty())
@@ -43,8 +45,8 @@ var _ = Describe("Model", func() {
 			Expect(service.Namespace).To(Equal("mystack-user"))
 			Expect(service.Name).To(Equal("test"))
 
-			appConfig := models.BuildAppConfig(service, "example.com", "controller.mystack.com", "logger.mystack.com")
-			Expect(appConfig.Domain).To(Equal("test.mystack-user.example.com"))
+			appConfig := models.BuildAppConfig(service, domain)
+			Expect(appConfig.Domain).To(Equal("test.mystack-user.mystack.com"))
 		})
 
 		It("should create correct domain for controller", func() {
@@ -53,7 +55,7 @@ var _ = Describe("Model", func() {
 			Expect(controller.Namespace).To(Equal("mystack"))
 			Expect(controller.Name).To(Equal("controller"))
 
-			appConfig := models.BuildAppConfig(controller, "example.com", "controller.mystack.com", "logger.mystack.com")
+			appConfig := models.BuildAppConfig(controller, domain)
 			Expect(appConfig.Domain).To(Equal("controller.mystack.com"))
 		})
 
@@ -63,8 +65,14 @@ var _ = Describe("Model", func() {
 			Expect(logger.Namespace).To(Equal("mystack"))
 			Expect(logger.Name).To(Equal("logger"))
 
-			appConfig := models.BuildAppConfig(logger, "example.com", "controller.mystack.com", "logger.mystack.com")
+			appConfig := models.BuildAppConfig(logger, domain)
 			Expect(appConfig.Domain).To(Equal("logger.mystack.com"))
+		})
+	})
+
+	Describe("AddCustomDomains", func() {
+		It("should add custom domains", func() {
+
 		})
 	})
 })

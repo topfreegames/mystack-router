@@ -8,7 +8,7 @@
 package testing
 
 import (
-	"k8s.io/client-go/kubernetes/fake"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/pkg/apis/extensions"
@@ -35,7 +35,7 @@ spec:
           ports:
             - containerPort: 5000
 `
-	serviceYaml = `
+	ServiceYaml = `
 apiVersion: v1
 kind: Service
 metadata:
@@ -132,11 +132,11 @@ spec:
 )
 
 //CreateService creates a mock service on kubernetes for testing purposes
-func CreateService(clientset *fake.Clientset) (*v1.Service, error) {
-	return createService(clientset, serviceYaml, namespace)
+func CreateService(clientset kubernetes.Interface) (*v1.Service, error) {
+	return createService(clientset, ServiceYaml, namespace)
 }
 
-func createService(clientset *fake.Clientset, yaml, namespace string) (*v1.Service, error) {
+func createService(clientset kubernetes.Interface, yaml, namespace string) (*v1.Service, error) {
 	d := api.Codecs.UniversalDecoder()
 	obj, _, err := d.Decode([]byte(yaml), nil, nil)
 	if err != nil {
@@ -155,11 +155,11 @@ func createService(clientset *fake.Clientset, yaml, namespace string) (*v1.Servi
 }
 
 //CreateDeployment creates a mock deployment on kubernetes for testing purposes
-func CreateDeployment(clientset *fake.Clientset) (*v1beta1.Deployment, error) {
+func CreateDeployment(clientset kubernetes.Interface) (*v1beta1.Deployment, error) {
 	return createDeployment(clientset, deployYaml, namespace)
 }
 
-func createDeployment(clientset *fake.Clientset, yaml, namespace string) (*v1beta1.Deployment, error) {
+func createDeployment(clientset kubernetes.Interface, yaml, namespace string) (*v1beta1.Deployment, error) {
 	d := api.Codecs.UniversalDecoder()
 	obj, _, err := d.Decode([]byte(yaml), nil, nil)
 	if err != nil {
@@ -178,7 +178,7 @@ func createDeployment(clientset *fake.Clientset, yaml, namespace string) (*v1bet
 }
 
 //CreateController creates a mock service on kubernetes for testing purposes
-func CreateController(clientset *fake.Clientset) (*v1.Service, error) {
+func CreateController(clientset kubernetes.Interface) (*v1.Service, error) {
 	namespaceStr := "mystack"
 	_, err := createDeployment(clientset, controllerDeployYaml, namespaceStr)
 	if err != nil {
@@ -190,7 +190,7 @@ func CreateController(clientset *fake.Clientset) (*v1.Service, error) {
 }
 
 //CreateLogger creates a mock service on kubernetes for testing purposes
-func CreateLogger(clientset *fake.Clientset) (*v1.Service, error) {
+func CreateLogger(clientset kubernetes.Interface) (*v1.Service, error) {
 	namespaceStr := "mystack"
 	_, err := createDeployment(clientset, loggerDeployYaml, namespaceStr)
 	if err != nil {

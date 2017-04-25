@@ -23,7 +23,7 @@ var _ = Describe("Config", func() {
 
 		BeforeEach(func() {
 			fs = models.NewMockFS()
-			routerConfig = models.NewRouterConfig()
+			routerConfig = models.NewRouterConfig("mystack.com")
 		})
 
 		It("should write file from RouterConfig", func() {

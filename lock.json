@@ -1,5 +1,5 @@
 {
-    "memo": "3d4b3363073cacfba198f256dc8fb4832cc0fb99f890699a20b2c3af10ea9877",
+    "memo": "ec7bbeee16f24df4863bf119b8eb34b3ef6fb4df653bcb066c0fa1129669a0dc",
     "projects": [
         {
             "name": "cloud.google.com/go",
@@ -67,9 +67,17 @@
             ]
         },
         {
+            "name": "github.com/cenkalti/backoff",
+            "version": "v1.0.0",
+            "revision": "32cd0c5b3aef12c76ed64aaf678f6c79736be7dc",
+            "packages": [
+                "."
+            ]
+        },
+        {
             "name": "github.com/coreos/go-oidc",
             "branch": "master",
-            "revision": "be73733bb8cc830d0205609b95d125215f8e9c70",
+            "revision": "5157aa730c25a7531d4b99483e6a440d4ab735a0",
             "packages": [
                 "http",
                 "jose",
@@ -98,8 +106,8 @@
         },
         {
             "name": "github.com/docker/distribution",
-            "version": "v2.6.0",
-            "revision": "325b0804fef3a66309d962357aac3c2ce3f4d329",
+            "version": "v2.6.1",
+            "revision": "a25b9ef0c9fe242ac04bb20d3a028442b7d266b6",
             "packages": [
                 "digest",
                 "reference"
@@ -150,7 +158,7 @@
         {
             "name": "github.com/go-openapi/spec",
             "branch": "master",
-            "revision": "02fb9cd3430ed0581e0ceb4804d5d4b3cc702694",
+            "revision": "e51c28f07047ad90caff03f6450908720d337e0c",
             "packages": [
                 "."
             ]
@@ -158,7 +166,7 @@
         {
             "name": "github.com/go-openapi/swag",
             "branch": "master",
-            "revision": "d5f8ebc3b1c55a4cf6489eeae7354f338cfe299e",
+            "revision": "24ebf76d720bab64f62824d76bced3184a65490d",
             "packages": [
                 "."
             ]
@@ -207,7 +215,7 @@
         {
             "name": "github.com/hashicorp/hcl",
             "branch": "master",
-            "revision": "630949a3c5fa3c613328e1b8256052cbc2327c9b",
+            "revision": "7fa7fff964d035e8a162cce3a164b3ad02ad651b",
             "packages": [
                 ".",
                 "hcl/ast",
@@ -229,6 +237,15 @@
             ]
         },
         {
+            "name": "github.com/jmoiron/sqlx",
+            "branch": "master",
+            "revision": "3564e3a314b957a161fefa0e7aea85b4d741c94e",
+            "packages": [
+                ".",
+                "reflectx"
+            ]
+        },
+        {
             "name": "github.com/jonboulle/clockwork",
             "version": "v0.1.0",
             "revision": "2eee05ed794112d45db504eb05aa693efd2b8b09",
@@ -245,6 +262,15 @@
             ]
         },
         {
+            "name": "github.com/lib/pq",
+            "branch": "master",
+            "revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
+            "packages": [
+                ".",
+                "oid"
+            ]
+        },
+        {
             "name": "github.com/magiconair/properties",
             "version": "v1.7.2",
             "revision": "f917359f079a3759162704eaa8caeec3d01d9f91",
@@ -255,7 +281,7 @@
         {
             "name": "github.com/mailru/easyjson",
             "branch": "master",
-            "revision": "2af9a745a611440bab0528e5ac19b2805a1c50eb",
+            "revision": "9e74fe5423dca819cf8fd940d9a5d5307ac7aa10",
             "packages": [
                 "buffer",
                 "jlexer",
@@ -265,7 +291,7 @@
         {
             "name": "github.com/mitchellh/mapstructure",
             "branch": "master",
-            "revision": "53818660ed4955e899c0bcafa97299a388bd7c8e",
+            "revision": "cc8532a8e9a55ea36402aa21efdf403a60d34096",
             "packages": [
                 "."
             ]
@@ -357,8 +383,8 @@
         },
         {
             "name": "github.com/spf13/cast",
-            "version": "v1.0.0",
-            "revision": "ce135a4ebeee6cfe9a26c93ee0d37825f26113c7",
+            "version": "v1.1.0",
+            "revision": "acbeb36b902d72a7a4c18e8f3241075e7ab763e4",
             "packages": [
                 "."
             ]
@@ -366,7 +392,7 @@
         {
             "name": "github.com/spf13/cobra",
             "branch": "master",
-            "revision": "7aeaa2cce6ae7e18d2a6ee597b60ee137e999bd9",
+            "revision": "6ed17b5128e8932c9ecd4c3970e8ea5e60a418ac",
             "packages": [
                 "."
             ]
@@ -382,7 +408,7 @@
         {
             "name": "github.com/spf13/pflag",
             "branch": "master",
-            "revision": "d16db1e50e33dff1b6cdf37596cef36742128670",
+            "revision": "2300d0f8576fe575f71aaa5b9bbe4e1b0dc2eb51",
             "packages": [
                 "."
             ]
@@ -390,7 +416,7 @@
         {
             "name": "github.com/spf13/viper",
             "branch": "master",
-            "revision": "84f94806c67f59dd7ae87bc5351f7a9c94a4558d",
+            "revision": "0967fc9aceab2ce9da34061253ac10fb99bba5b2",
             "packages": [
                 "."
             ]
@@ -406,7 +432,7 @@
         {
             "name": "golang.org/x/crypto",
             "branch": "master",
-            "revision": "573951cbe80bb6352881271bb276f48749eab6f4",
+            "revision": "c7af5bf2638a1164f2eb5467c39c6cffbd13a02e",
             "packages": [
                 "pbkdf2",
                 "scrypt"
@@ -415,7 +441,7 @@
         {
             "name": "golang.org/x/net",
             "branch": "master",
-            "revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
+            "revision": "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344",
             "packages": [
                 "context",
                 "context/ctxhttp",
@@ -430,7 +456,7 @@
         {
             "name": "golang.org/x/oauth2",
             "branch": "master",
-            "revision": "7fdf09982454086d5570c7db3e11f360194830ca",
+            "revision": "a6bd8cefa1811bd24b86f8902872e4e8225f74c4",
             "packages": [
                 ".",
                 "google",
@@ -442,7 +468,7 @@
         {
             "name": "golang.org/x/sys",
             "branch": "master",
-            "revision": "493114f68206f85e7e333beccfabc11e98cba8dd",
+            "revision": "9f30dcbe5be197894515a338a9bda9253567ea8f",
             "packages": [
                 "unix"
             ]
@@ -450,7 +476,7 @@
         {
             "name": "golang.org/x/text",
             "branch": "master",
-            "revision": "f4b4367115ec2de254587813edaa901bc1c723a8",
+            "revision": "a9a820217f98f7c8a207ec1e45a874e1fe12c478",
             "packages": [
                 "internal/gen",
                 "internal/triegen",
@@ -483,8 +509,8 @@
         },
         {
             "name": "google.golang.org/grpc",
-            "version": "v1.2.0",
-            "revision": "cdee119ee21e61eef7093a41ba148fa83585e143",
+            "version": "v1.2.1",
+            "revision": "8050b9cbc271307e5a716a9d782803d09b0d6f2d",
             "packages": [
                 ".",
                 "codes",
@@ -501,6 +527,14 @@
             ]
         },
         {
+            "name": "gopkg.in/DATA-DOG/go-sqlmock.v1",
+            "version": "v1.2.0",
+            "revision": "b983233bc0bbea4dc6e8ec8c8c923d935765ffec",
+            "packages": [
+                "."
+            ]
+        },
+        {
             "name": "gopkg.in/inf.v0",
             "version": "v0.9.0",
             "revision": "3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4",
@@ -511,7 +545,7 @@
         {
             "name": "gopkg.in/yaml.v2",
             "branch": "v2",
-            "revision": "a3f3340b5840cee44f372bddb5880fcbc419b46a",
+            "revision": "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b",
             "packages": [
                 "."
             ]

@@ -8,9 +8,10 @@
 package nginx
 
 import (
+	"text/template"
+
 	"github.com/Masterminds/sprig"
 	"github.com/topfreegames/mystack-router/models"
-	"text/template"
 )
 
 const configTemplate = `
@@ -21,20 +22,32 @@ events {
 http {
 	server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
 	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
-	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
+	{{$controllerDomain := .ControllerDomain}}
+	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{$customDomains := .CustomDomains}}{{range .Ports}}
+	{{if eq $domain $controllerDomain}}
+	server {
+		listen 80;
+		server_name login;
+		location / {
+			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
+		}
+	}
+	{{end}}
 	server {
 		listen 80;
 		server_name {{$domain}};
+		{{range $custom := $customDomains}}server_name {{$custom}};
+		{{end}}
 		location / {
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
 	}
 	{{end}}{{end}}	
-  server {
-    listen 80 default_server;
-    server_name _;
-    return 404;
-  }
+	server {
+		listen 80 default_server;
+		server_name _;
+		return 404;
+	}
 }
 `
 
