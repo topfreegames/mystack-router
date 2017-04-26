@@ -23,7 +23,7 @@ http {
 	server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
 	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
 	{{$controllerDomain := .ControllerDomain}}
-	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{$customDomains := .CustomDomains}}{{range .Ports}}
+	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
 	{{if eq $domain $controllerDomain}}
 	server {
 		listen 80;
@@ -36,8 +36,6 @@ http {
 	server {
 		listen 80;
 		server_name {{$domain}};
-		{{range $custom := $customDomains}}server_name {{$custom}};
-		{{end}}
 		location / {
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
