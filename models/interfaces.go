@@ -13,9 +13,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-//DomainsPerApp holds the custom domains for each app or service
-type DomainsPerApp map[string][]string
-
 //FileSystem interface
 type FileSystem interface {
 	MkdirAll(path string, perm os.FileMode) error

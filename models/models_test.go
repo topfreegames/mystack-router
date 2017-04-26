@@ -69,10 +69,4 @@ var _ = Describe("Model", func() {
 			Expect(appConfig.Domain).To(Equal("logger.mystack.com"))
 		})
 	})
-
-	Describe("AddCustomDomains", func() {
-		It("should add custom domains", func() {
-
-		})
-	})
 })

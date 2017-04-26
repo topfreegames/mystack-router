@@ -145,10 +145,6 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 			continue
 		}
 		l.Info("new config found")
-		if err != nil {
-			log.Printf("Failed to get custom domains: %v", err)
-			continue
-		}
 		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
 		if err != nil {
 			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)
