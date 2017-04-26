@@ -1,9 +1,4 @@
 watcher:
   router-refresh-min-interval-s: 10
-postgres:
-  host: postgres
-  user: mystack_controller
-  dbname: mystack_controller
-  port: 8585
 kubernetes:
   service-domain-suffix: mystack.com
