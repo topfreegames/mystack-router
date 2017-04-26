@@ -8,9 +8,13 @@
 package extensions_test
 
 import (
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/fake"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
+	. "github.com/topfreegames/mystack-router/extensions"
 
 	"fmt"
 	"strings"
@@ -18,6 +22,9 @@ import (
 )
 
 var config *viper.Viper
+var watcher *Watcher
+var clusterName string = "MyCustomApps"
+var clientset kubernetes.Interface
 
 func TestExtensions(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -39,4 +46,11 @@ var _ = BeforeSuite(func() {
 		fmt.Printf("Config file %s failed to load: %s.\n", configFile, err.Error())
 		panic("Failed to load Config file")
 	}
+})
+
+var _ = BeforeEach(func() {
+	var err error
+	clientset = fake.NewSimpleClientset()
+	watcher, err = NewWatcher(config, clientset)
+	Expect(err).NotTo(HaveOccurred())
 })
