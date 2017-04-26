@@ -52,16 +52,13 @@ func BuildAppConfig(
 ) *AppConfig {
 	appConfig := &AppConfig{}
 
-	contains := func(key string) bool {
-		flag, ok := service.ObjectMeta.Labels[key]
-		return ok && flag == "true"
-	}
-
-	switch {
-	case contains("mystack/controller"):
+	switch service.GetName() {
+	case "mystack-controller":
 		appConfig.Domain = fmt.Sprintf("controller.%s", kubeDomainSuffix)
-	case contains("mystack/logger"):
+		break
+	case "mystack-logger":
 		appConfig.Domain = fmt.Sprintf("logger.%s", kubeDomainSuffix)
+		break
 	default:
 		appConfig.Domain = fmt.Sprintf("%s.%s.%s", service.Name, service.Namespace, kubeDomainSuffix)
 	}

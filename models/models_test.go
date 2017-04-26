@@ -53,7 +53,7 @@ var _ = Describe("Model", func() {
 			controller, err := mystackTest.CreateController(fakeClientset)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(controller.Namespace).To(Equal("mystack"))
-			Expect(controller.Name).To(Equal("controller"))
+			Expect(controller.Name).To(Equal("mystack-controller"))
 
 			appConfig := models.BuildAppConfig(controller, domain)
 			Expect(appConfig.Domain).To(Equal("controller.mystack.com"))
@@ -63,7 +63,7 @@ var _ = Describe("Model", func() {
 			logger, err := mystackTest.CreateLogger(fakeClientset)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(logger.Namespace).To(Equal("mystack"))
-			Expect(logger.Name).To(Equal("logger"))
+			Expect(logger.Name).To(Equal("mystack-logger"))
 
 			appConfig := models.BuildAppConfig(logger, domain)
 			Expect(appConfig.Domain).To(Equal("logger.mystack.com"))

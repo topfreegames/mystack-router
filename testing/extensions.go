@@ -58,17 +58,17 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: controller
+  name: mystack-controller
   namespace: mystack
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: controller
+        app: mystack-controller
     spec:
       containers:
-        - name: controller
+        - name: mystack-controller
           image: hello-world
           ports:
             - containerPort: 8080
@@ -77,11 +77,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: controller
+  name: mystack-controller
   namespace: mystack
   labels:
     mystack/routable: "true"
-    mystack/controller: "true"
 spec:
   selector:
     app: test
@@ -95,17 +94,17 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: logger
+  name: mystack-logger
   namespace: mystack
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: logger
+        app: mystack-logger
     spec:
       containers:
-        - name: logger
+        - name: mystack-logger
           image: hello-world
           ports:
             - containerPort: 8080
@@ -114,11 +113,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: logger
+  name: mystack-logger
   namespace: mystack
   labels:
     mystack/routable: "true"
-    mystack/logger: "true"
 spec:
   selector:
     app: test
