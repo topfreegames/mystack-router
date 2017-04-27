@@ -22,6 +22,7 @@ events {
 http {
 	server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
 	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
+	keepalive_timeout 1300s;
 	{{$controllerDomain := .ControllerDomain}}
 	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
 	{{if eq $domain $controllerDomain}}
@@ -29,10 +30,23 @@ http {
 		listen 80;
 		server_name login;
 		location / {
+			proxy_connect_timeout 60s;
+			proxy_send_timeout 700s;
+			proxy_read_timeout 700s;
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
 	}
-	{{end}}
+	server {
+		listen 80;
+		server_name {{$domain}};
+		location / {
+			proxy_connect_timeout 60s;
+			proxy_send_timeout 700s;
+			proxy_read_timeout 700s;
+			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
+		}
+	}
+	{{else}}
 	server {
 		listen 80;
 		server_name {{$domain}};
@@ -40,7 +54,7 @@ http {
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
 	}
-	{{end}}{{end}}	
+	{{end}}{{end}}{{end}}	
 	server {
 		listen 80 default_server;
 		server_name _;
