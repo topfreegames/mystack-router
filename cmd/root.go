@@ -52,7 +52,7 @@ func InitConfig() {
 	config.SetConfigType("yaml")
 	config.SetEnvPrefix("MYSTACK")
 	config.AddConfigPath(".")
-	config.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	config.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	config.AutomaticEnv()
 
 	// If a config file is found, read it in.
