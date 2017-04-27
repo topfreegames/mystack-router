@@ -1,0 +1,2 @@
+domain: mystack.com
+replicaCount: 2
