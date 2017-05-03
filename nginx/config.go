@@ -31,8 +31,8 @@ http {
 		server_name login;
 		location / {
 			proxy_connect_timeout 60s;
-			proxy_send_timeout 700s;
-			proxy_read_timeout 700s;
+			proxy_send_timeout 1300s;
+			proxy_read_timeout 1300s;
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
 	}
@@ -41,8 +41,8 @@ http {
 		server_name {{$domain}};
 		location / {
 			proxy_connect_timeout 60s;
-			proxy_send_timeout 700s;
-			proxy_read_timeout 700s;
+			proxy_send_timeout 1300s;
+			proxy_read_timeout 1300s;
 			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
 		}
 	}
