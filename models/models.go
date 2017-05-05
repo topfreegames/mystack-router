@@ -21,6 +21,7 @@ type RouterConfig struct {
 	ServerNamesHashBucketSize string `key:"serverNamesHashBucketSize" constraint:"^[1-9]\\d*$"`
 	AppConfigs                []*AppConfig
 	ControllerDomain          string
+	LoggerDomain              string
 }
 
 // AppConfig encapsulates the configuration for all routes to a single back end.
@@ -42,6 +43,7 @@ func NewRouterConfig(kubeDomainSuffix string) *RouterConfig {
 		ServerNamesHashMaxSize:    "512",
 		ServerNamesHashBucketSize: "128",
 		ControllerDomain:          fmt.Sprintf("controller.%s", kubeDomainSuffix),
+		LoggerDomain:              fmt.Sprintf("logger.%s", kubeDomainSuffix),
 	}
 }
 

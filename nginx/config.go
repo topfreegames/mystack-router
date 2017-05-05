@@ -17,49 +17,61 @@ import (
 const configTemplate = `
 worker_processes {{.WorkerProcesses}};
 events {
-	worker_connections {{.MaxWorkerConnections}};
+  worker_connections {{.MaxWorkerConnections}};
 }
 http {
-	server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
-	server_names_hash_max_size {{.ServerNamesHashMaxSize}};
-	keepalive_timeout 1300s;
-	{{$controllerDomain := .ControllerDomain}}
-	{{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
-	{{if eq $domain $controllerDomain}}
-	server {
-		listen 80;
-		server_name login;
-		location / {
-			proxy_connect_timeout 60s;
-			proxy_send_timeout 1300s;
-			proxy_read_timeout 1300s;
-			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
-		}
-	}
-	server {
-		listen 80;
-		server_name {{$domain}};
-		location / {
-			proxy_connect_timeout 60s;
-			proxy_send_timeout 1300s;
-			proxy_read_timeout 1300s;
-			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
-		}
-	}
-	{{else}}
-	server {
-		listen 80;
-		server_name {{$domain}};
-		location / {
-			proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
-		}
-	}
-	{{end}}{{end}}{{end}}	
-	server {
-		listen 80 default_server;
-		server_name _;
-		return 404;
-	}
+  server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
+  server_names_hash_max_size {{.ServerNamesHashMaxSize}};
+  keepalive_timeout 1300s;
+  {{$controllerDomain := .ControllerDomain}}
+  {{$loggerDomain := .LoggerDomain}}
+  {{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
+  {{if eq $domain $controllerDomain}}
+  server {
+    listen 80;
+    server_name login;
+    location / {
+      proxy_connect_timeout 60s;
+      proxy_send_timeout 1300s;
+      proxy_read_timeout 1300s;
+      proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
+    }
+  }
+  server {
+    listen 80;
+    server_name {{$domain}};
+    location / {
+      proxy_connect_timeout 60s;
+      proxy_send_timeout 1300s;
+      proxy_read_timeout 1300s;
+      proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
+    }
+  }
+  {{else if eq $domain $loggerDomain}}
+  server {
+    listen 80;
+    server_name {{$domain}};
+    location / {
+      proxy_connect_timeout 60s;
+      proxy_send_timeout 1300s;
+      proxy_read_timeout 1300s;
+      proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
+    }
+  }
+  {{else}}
+  server {
+    listen 80;
+    server_name {{$domain}};
+    location / {
+      proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
+    }
+  }
+  {{end}}{{end}}{{end}}  
+  server {
+    listen 80 default_server;
+    server_name _;
+    return 404;
+  }
 }
 `
 
