@@ -10,6 +10,9 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+    - protocol: TCP
+      port: 28000
+      name: tcp
   type: LoadBalancer
 ---
 apiVersion: extensions/v1beta1
@@ -28,3 +31,4 @@ spec:
           image: tfgco/mystack-router:v1
           ports:
             - containerPort: 8080
+            - containerPort: 28000

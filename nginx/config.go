@@ -19,6 +19,12 @@ worker_processes {{.WorkerProcesses}};
 events {
   worker_connections {{.MaxWorkerConnections}};
 }
+stream {
+	server {
+		listen 28000;
+		proxy_pass mystack-controller:28000;
+	}
+}
 http {
   server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
   server_names_hash_max_size {{.ServerNamesHashMaxSize}};
