@@ -8,8 +8,15 @@
 package extensions_test
 
 import (
+	"fmt"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/afero"
+	ext "github.com/topfreegames/mystack-router/extensions"
+	"github.com/topfreegames/mystack-router/models"
+	"github.com/topfreegames/mystack-router/nginx"
 	mystackTest "github.com/topfreegames/mystack-router/testing"
 )
 
@@ -48,6 +55,115 @@ var _ = Describe("Watcher", func() {
 			routerConfig, err := watcher.Build()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(routerConfig.AppConfigs).To(HaveLen(1))
+		})
+	})
+
+	Describe("CreateConfigFile", func() {
+		It("should create a config file", func() {
+			fs := models.NewMockFS(nil)
+			err := watcher.CreateConfigFile(fs)
+			Expect(err).NotTo(HaveOccurred())
+
+			exists, err := afero.DirExists(fs.AppFS, ext.NginxConfigDir)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeTrue())
+
+			exists, err = afero.Exists(fs.AppFS, ext.NginxConfigFilePath)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeTrue())
+		})
+
+		It("should return error", func() {
+			fs := models.NewMockFS(fmt.Errorf("error"))
+			err := watcher.CreateConfigFile(fs)
+			Expect(err).To(HaveOccurred())
+
+			exists, err := afero.DirExists(fs.AppFS, ext.NginxConfigDir)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeFalse())
+
+			exists, err = afero.Exists(fs.AppFS, ext.NginxConfigFilePath)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exists).To(BeFalse())
+		})
+	})
+
+	Describe("Start", func() {
+		It("should start nginx and config file", func() {
+			ng := &nginx.Mock{}
+			fs := models.NewMockFS(nil)
+			watcher, err := ext.NewWatcher(config, clientset)
+			Expect(err).NotTo(HaveOccurred())
+
+			timeout := time.After(1 * time.Second)
+			go watcher.Start(ng, fs)
+
+			select {
+			case <-timeout:
+				exists, err := afero.DirExists(fs.AppFS, ext.NginxConfigDir)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeTrue())
+
+				exists, err = afero.Exists(fs.AppFS, ext.NginxConfigFilePath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeTrue())
+
+				exists, err = afero.Exists(fs.AppFS, fmt.Sprintf("%s/conf.d", ext.NginxConfigDir))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeFalse())
+			}
+		})
+
+		It("should return error from nginx", func() {
+			ng := &nginx.Mock{Err: fmt.Errorf("error")}
+			fs := models.NewMockFS(nil)
+			watcher, err := ext.NewWatcher(config, clientset)
+			Expect(err).NotTo(HaveOccurred())
+
+			timeout := time.After(1 * time.Second)
+			go watcher.Start(ng, fs)
+
+			select {
+			case <-timeout:
+				exists, err := afero.DirExists(fs.AppFS, ext.NginxConfigDir)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeTrue())
+
+				exists, err = afero.Exists(fs.AppFS, ext.NginxConfigFilePath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeTrue())
+
+				exists, err = afero.Exists(fs.AppFS, fmt.Sprintf("%s/conf.d", ext.NginxConfigDir))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeFalse())
+			}
+		})
+
+		It("should return error from filesystem", func() {
+			ng := &nginx.Mock{}
+			fs := models.NewMockFS(fmt.Errorf("error"))
+			watcher, err := ext.NewWatcher(config, clientset)
+			Expect(err).NotTo(HaveOccurred())
+
+			timeout := time.After(1 * time.Second)
+			go watcher.Start(ng, fs)
+
+			select {
+			case <-timeout:
+				Expect(err).NotTo(HaveOccurred())
+
+				exists, err := afero.DirExists(fs.AppFS, ext.NginxConfigDir)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeFalse())
+
+				exists, err = afero.Exists(fs.AppFS, ext.NginxConfigFilePath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeFalse())
+
+				exists, err = afero.Exists(fs.AppFS, fmt.Sprintf("%s/conf.d", ext.NginxConfigDir))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exists).To(BeFalse())
+			}
 		})
 	})
 })
