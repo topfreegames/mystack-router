@@ -13,8 +13,10 @@ import (
 	"os/exec"
 )
 
+type Nginx struct{}
+
 //Reload reloads nginx
-func Reload(logger logrus.FieldLogger) error {
+func (*Nginx) Reload(logger logrus.FieldLogger) error {
 	logger.Info("reloading nginx")
 
 	cmd := exec.Command("nginx", "-s", "reload")
@@ -30,7 +32,7 @@ func Reload(logger logrus.FieldLogger) error {
 }
 
 //AssertConfig tests config file for correct syntax
-func AssertConfig(filePath string, logger logrus.FieldLogger) error {
+func (*Nginx) AssertConfig(filePath string, logger logrus.FieldLogger) error {
 	cmd := exec.Command("nginx", "-t", "-c", filePath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

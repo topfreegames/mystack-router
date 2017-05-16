@@ -29,3 +29,8 @@ func (m *RealFS) MkdirAll(path string, perm os.FileMode) error {
 func (m *RealFS) Create(name string) (afero.File, error) {
 	return os.Create(name)
 }
+
+//RemoveAll removes a file
+func (m *RealFS) RemoveAll(path string) error {
+	return os.RemoveAll(path)
+}

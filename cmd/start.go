@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/mystack-router/extensions"
 	"github.com/topfreegames/mystack-router/models"
+	"github.com/topfreegames/mystack-router/nginx"
 )
 
 // startCmd represents the start command
@@ -24,12 +25,13 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		err = w.CreateConfigFile()
+		fs := models.NewRealFS()
+		err = w.CreateConfigFile(fs)
 		if err != nil {
 			panic(err)
 		}
-		fs := models.NewRealFS()
-		err = w.Start(fs)
+		ng := &nginx.Nginx{}
+		err = w.Start(ng, fs)
 		if err != nil {
 			panic(err)
 		}
