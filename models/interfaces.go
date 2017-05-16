@@ -17,4 +17,5 @@ import (
 type FileSystem interface {
 	MkdirAll(path string, perm os.FileMode) error
 	Create(name string) (afero.File, error)
+	RemoveAll(path string) error
 }

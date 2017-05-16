@@ -8,6 +8,8 @@
 package nginx_test
 
 import (
+	"fmt"
+
 	"github.com/topfreegames/mystack-router/models"
 	. "github.com/topfreegames/mystack-router/nginx"
 
@@ -22,13 +24,19 @@ var _ = Describe("Config", func() {
 		var fs models.FileSystem
 
 		BeforeEach(func() {
-			fs = models.NewMockFS()
+			fs = models.NewMockFS(nil)
 			routerConfig = models.NewRouterConfig("mystack.com")
 		})
 
 		It("should write file from RouterConfig", func() {
 			err = WriteConfig(routerConfig, fs, "/etc/nginx/nginx.conf")
 			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should return error", func() {
+			fs = models.NewMockFS(fmt.Errorf("error"))
+			err = WriteConfig(routerConfig, fs, "/etc/nginx/nginx.conf")
+			Expect(err).To(HaveOccurred())
 		})
 	})
 })

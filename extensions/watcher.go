@@ -28,8 +28,8 @@ import (
 )
 
 const (
-	nginxConfigDir      = "/etc/nginx"
-	nginxConfigFilePath = nginxConfigDir + "/nginx.conf"
+	NginxConfigDir      = "/etc/nginx"
+	NginxConfigFilePath = NginxConfigDir + "/nginx.conf"
 )
 
 // Watcher is the extension that watches for kubernetes services changes
@@ -106,18 +106,18 @@ func (w *Watcher) Build() (*models.RouterConfig, error) {
 }
 
 //CreateConfigFile make nginx directory (if not exists) and create nginx config file.
-func (w *Watcher) CreateConfigFile() error {
-	err := os.MkdirAll(nginxConfigDir, os.ModePerm)
+func (w *Watcher) CreateConfigFile(fs models.FileSystem) error {
+	err := fs.MkdirAll(NginxConfigDir, os.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	_, err = os.Create(nginxConfigFilePath)
+	_, err = fs.Create(NginxConfigFilePath)
 	return err
 }
 
 // Start starts the watcher, this call is blocking!
-func (w *Watcher) Start(fs models.FileSystem) error {
+func (w *Watcher) Start(ng nginx.NginxInterface, fs models.FileSystem) error {
 	l := log.WithFields(log.Fields{
 		"tokenPerSecond": w.tokenPerSec,
 		"burst":          w.burst,
@@ -127,7 +127,7 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 	known := &models.RouterConfig{}
 
 	// Remove this dir because it overwrites our conf if exists
-	err := os.RemoveAll(fmt.Sprintf("%s/conf.d", nginxConfigDir))
+	err := fs.RemoveAll(fmt.Sprintf("%s/conf.d", NginxConfigDir))
 	if err != nil {
 		return err
 	}
@@ -145,17 +145,17 @@ func (w *Watcher) Start(fs models.FileSystem) error {
 			continue
 		}
 		l.Info("new config found")
-		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
+		err = nginx.WriteConfig(routerConfig, fs, NginxConfigFilePath)
 		if err != nil {
 			log.Printf("Failed to write new nginx configuration; continuing with existing configuration: %v", err)
 			continue
 		}
-		err = nginx.Reload(l)
+		err = ng.Reload(l)
 		if err != nil {
 			return err
 		}
 		l.Info("nginx reloaded")
-		err = nginx.WriteConfig(routerConfig, fs, nginxConfigFilePath)
+		err = nginx.WriteConfig(routerConfig, fs, NginxConfigFilePath)
 		known = routerConfig
 	}
 }

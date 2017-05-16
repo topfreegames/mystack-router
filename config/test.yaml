@@ -1,4 +1,4 @@
 watcher:
-  router-refresh-min-interval-s: 10
+  router-refresh-min-interval-s: 1
 kubernetes:
   service-domain-suffix: mystack.com

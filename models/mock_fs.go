@@ -8,28 +8,45 @@
 package models
 
 import (
-	"github.com/spf13/afero"
 	"os"
+
+	"github.com/spf13/afero"
 )
 
 //MockFS implements FileSystem interface
 type MockFS struct {
 	AppFS afero.Fs
+	err   error
 }
 
 //NewMockFS constructs a new mock
-func NewMockFS() *MockFS {
+func NewMockFS(err error) *MockFS {
 	return &MockFS{
 		AppFS: afero.NewMemMapFs(),
+		err:   err,
 	}
 }
 
 //MkdirAll creates a mock directory
 func (m *MockFS) MkdirAll(path string, perm os.FileMode) error {
+	if m.err != nil {
+		return m.err
+	}
 	return m.AppFS.MkdirAll(path, perm)
 }
 
 //Create creates a mock file
 func (m *MockFS) Create(name string) (afero.File, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
 	return m.AppFS.Create(name)
+}
+
+//RemoveAll removes a file
+func (m *MockFS) RemoveAll(path string) error {
+	if m.err != nil {
+		return m.err
+	}
+	return m.AppFS.RemoveAll(path)
 }
