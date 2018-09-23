@@ -1,4 +1,5 @@
 // mystack
+// +build integration
 // https://github.com/topfreegames/mystack-router
 //
 // Licensed under the MIT license:
@@ -8,11 +9,13 @@
 package testing
 
 import (
+	"bytes"
+	"html/template"
+
+	"github.com/topfreegames/maestro/errors"
+	"k8s.io/api/apps/v1beta1"
+	"k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
-	"k8s.io/client-go/pkg/api/v1"
-	"k8s.io/client-go/pkg/apis/extensions"
-	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 const (
@@ -35,6 +38,7 @@ spec:
           ports:
             - containerPort: 5000
 `
+	// ServiceYaml ...
 	ServiceYaml = `
 apiVersion: v1
 kind: Service
@@ -135,21 +139,29 @@ func CreateService(clientset kubernetes.Interface) (*v1.Service, error) {
 }
 
 func createService(clientset kubernetes.Interface, yaml, namespace string) (*v1.Service, error) {
-	d := api.Codecs.UniversalDecoder()
-	obj, _, err := d.Decode([]byte(yaml), nil, nil)
+	tmpl, err := template.New("create").Parse(serviceYaml)
 	if err != nil {
 		return nil, err
 	}
 
-	src := obj.(*api.Service)
-	dst := &v1.Service{}
-
-	err = api.Scheme.Convert(src, dst, 0)
+	buf := new(bytes.Buffer)
+	err = tmpl.Execute(buf, s)
 	if err != nil {
 		return nil, err
 	}
 
-	return clientset.CoreV1().Services(namespace).Create(dst)
+	k8sService := v1.Service{}
+	err = yaml.NewYAMLOrJSONDecoder(bytes.NewReader(buf.Bytes()), len(buf.Bytes())).Decode(&k8sService)
+	if err != nil {
+		return nil, errors.NewKubernetesError("error unmarshaling pod", err)
+	}
+
+	service, err := clientset.CoreV1().Services(s.Namespace).Create(&k8sService)
+	if err != nil {
+		return nil, errors.NewKubernetesError("create pod error", err)
+	}
+
+	return service, nil
 }
 
 //CreateDeployment creates a mock deployment on kubernetes for testing purposes

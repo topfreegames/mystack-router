@@ -14,19 +14,19 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/spf13/viper"
+	"k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
-	"k8s.io/client-go/pkg/api/v1"
-	"k8s.io/client-go/pkg/fields"
-	"k8s.io/client-go/pkg/labels"
-	"k8s.io/client-go/pkg/util/flowcontrol"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/util/flowcontrol"
 
-	_ "github.com/lib/pq"
 	"github.com/topfreegames/mystack-router/models"
 	"github.com/topfreegames/mystack-router/nginx"
 )
 
+// Nginx consts
 const (
 	NginxConfigDir      = "/etc/nginx"
 	NginxConfigFilePath = NginxConfigDir + "/nginx.conf"
@@ -78,11 +78,12 @@ func (w *Watcher) configureClient() error {
 //GetMyStackServices return list of services running on k8s
 func (w *Watcher) GetMyStackServices() (*v1.ServiceList, error) {
 	labelMap := labels.Set{"mystack/routable": "true"}
-	listOptions := v1.ListOptions{
+	opts := metav1.ListOptions{
 		LabelSelector: labelMap.AsSelector().String(),
 		FieldSelector: fields.Everything().String(),
 	}
-	services, err := w.kubeClientSet.CoreV1().Services(api.NamespaceAll).List(listOptions)
+	allNamespaces := ""
+	services, err := w.kubeClientSet.CoreV1().Services(allNamespaces).List(opts)
 	return services, err
 }
 
