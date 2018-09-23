@@ -24,6 +24,16 @@ stream {
 		listen 28000;
 		proxy_pass mystack-controller:28000;
 	}
+
+	
+  {{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}
+	{{range $i, $s := .SocketPorts}}
+	server {
+		listen {{$s}}
+		proxy_pass {{$name}}.{{$namespace}}.svc.cluster.local.:{{index .Ports $i}};
+	}
+	{{end}}
+	{{end}}
 }
 http {
   server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
@@ -64,7 +74,7 @@ http {
       proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
     }
   }
-  {{else}}
+  {{else if not .IsSocket}}
   server {
     listen 80;
     server_name {{$domain}};

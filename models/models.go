@@ -9,6 +9,8 @@ package models
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"k8s.io/api/core/v1"
 )
@@ -31,6 +33,8 @@ type AppConfig struct {
 	AppNamespace string
 	ClusterName  string
 	Ports        []int
+	IsSocket     bool
+	SocketPorts  []int
 }
 
 //NewRouterConfig builds new router config with default values
@@ -68,12 +72,21 @@ func BuildAppConfig(
 	appConfig.AppName = service.ObjectMeta.GetName()
 	appConfig.AppNamespace = service.ObjectMeta.GetNamespace()
 	appConfig.ClusterName = service.ObjectMeta.Labels["mystack/cluster"]
+	appConfig.IsSocket = service.ObjectMeta.Labels["mystack/socket"] == "true"
 
 	ports := make([]int, len(service.Spec.Ports))
 	for i, port := range service.Spec.Ports {
 		ports[i] = int(port.Port)
 	}
 	appConfig.Ports = ports
+
+	if appConfig.IsSocket {
+		sockerPorts := strings.Split(service.ObjectMeta.Labels["mystack/socketPorts"], ",")
+		appConfig.SocketPorts = make([]int, len(sockerPorts))
+		for idx, sockerPort := range sockerPorts {
+			appConfig.SocketPorts[idx], _ = strconv.Atoi(sockerPort)
+		}
+	}
 
 	return appConfig
 }
