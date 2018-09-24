@@ -149,6 +149,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/howeyc/gopass"
+  packages = ["."]
+  revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
+
+[[projects]]
   name = "github.com/hpcloud/tail"
   packages = [
     ".",
@@ -306,6 +312,12 @@
   name = "github.com/spf13/viper"
   packages = ["."]
   revision = "3171ef9a229903ce60a9513ec3899b63c003e91c"
+
+[[projects]]
+  name = "github.com/topfreegames/maestro"
+  packages = ["errors"]
+  revision = "b34c787457f4aac80be7cbe72a85a405d80a66ce"
+  version = "v7.0.2"
 
 [[projects]]
   branch = "master"
@@ -554,12 +566,17 @@
     "rest",
     "rest/watch",
     "testing",
+    "tools/auth",
+    "tools/clientcmd",
     "tools/clientcmd/api",
+    "tools/clientcmd/api/latest",
+    "tools/clientcmd/api/v1",
     "tools/metrics",
     "tools/reference",
     "transport",
     "util/cert",
     "util/flowcontrol",
+    "util/homedir",
     "util/integer"
   ]
   revision = "23781f4d6632d88e869066eaebb743857aa1ef9b"
@@ -574,6 +591,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f7238b6a17d8c64bba2938c7f297bb7f6f6bb9ffa34cd845a0e42b316dba3466"
+  inputs-digest = "3ed3d764e5e80d9e7a77f4b4fe19ebdf209c1642deef25e67318735a047c10aa"
   solver-name = "gps-cdcl"
   solver-version = 1

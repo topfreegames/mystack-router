@@ -2,3 +2,8 @@ watcher:
   router-refresh-min-interval-s: 10
 kubernetes:
   service-domain-suffix: mystack.com
+  in-cluster: true
+  config: ~/.kube/config
+nginx:
+  dir: /etc/nginx
+  file: nginx.conf

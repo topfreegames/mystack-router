@@ -8,11 +8,16 @@
 package cmd
 
 import (
+	"fmt"
+
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/mystack-router/extensions"
 	"github.com/topfreegames/mystack-router/models"
 	"github.com/topfreegames/mystack-router/nginx"
 )
+
+var kubeConf string
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -21,6 +26,7 @@ var startCmd = &cobra.Command{
 	Long:  `starts mystack watcher`,
 	Run: func(cmd *cobra.Command, args []string) {
 		InitConfig()
+		config.Set("kubernetes.config", kubeConf)
 		w, err := extensions.NewWatcher(config, nil)
 		if err != nil {
 			panic(err)
@@ -40,4 +46,12 @@ var startCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(startCmd)
+	home, err := homedir.Dir()
+	if err != nil {
+		panic(err)
+	}
+	startCmd.Flags().StringVar(
+		&kubeConf, "kubeconfig",
+		fmt.Sprintf("%s/.kube/config", home),
+		"path to the kubeconfig file (not needed if using in-cluster=true)")
 }

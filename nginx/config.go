@@ -24,25 +24,32 @@ stream {
 		listen 28000;
 		proxy_pass mystack-controller:28000;
 	}
-
 	
-  {{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}
-	{{range $i, $s := .SocketPorts}}
+  {{- range .AppConfigs}}
+	{{- $name := .AppName}}
+	{{- $namespace := .AppNamespace}}
+	{{- $ports := .Ports}}
+	{{- range $i, $s := .SocketPorts}}
 	server {
 		listen {{$s}}
-		proxy_pass {{$name}}.{{$namespace}}.svc.cluster.local.:{{index .Ports $i}};
+		proxy_pass {{$name}}.{{$namespace}}.svc.cluster.local.:{{index $ports $i}};
 	}
-	{{end}}
-	{{end}}
+	{{- end}}
+	{{- end}}
 }
 http {
   server_names_hash_bucket_size {{.ServerNamesHashBucketSize}};
   server_names_hash_max_size {{.ServerNamesHashMaxSize}};
   keepalive_timeout 1300s;
-  {{$controllerDomain := .ControllerDomain}}
-  {{$loggerDomain := .LoggerDomain}}
-  {{range .AppConfigs}}{{$name := .AppName}}{{$namespace := .AppNamespace}}{{$domain := .Domain}}{{range .Ports}}
-  {{if eq $domain $controllerDomain}}
+  {{- $controllerDomain := .ControllerDomain}}
+  {{- $loggerDomain := .LoggerDomain}}
+  {{- range .AppConfigs}}
+	{{- $name := .AppName}}
+	{{- $namespace := .AppNamespace}}
+	{{- $domain := .Domain}}
+	{{- $isSocket := .IsSocket}}
+	{{- range .Ports}}
+  {{- if eq $domain $controllerDomain}}
   server {
     listen 80;
     server_name login;
@@ -63,7 +70,7 @@ http {
       proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
     }
   }
-  {{else if eq $domain $loggerDomain}}
+  {{- else if eq $domain $loggerDomain}}
   server {
     listen 80;
     server_name {{$domain}};
@@ -74,7 +81,7 @@ http {
       proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
     }
   }
-  {{else if not .IsSocket}}
+  {{- else if not $isSocket}}
   server {
     listen 80;
     server_name {{$domain}};
@@ -82,7 +89,9 @@ http {
       proxy_pass http://{{$name}}.{{$namespace}}:{{.}};
     }
   }
-  {{end}}{{end}}{{end}}  
+  {{- end}}
+	{{- end}}
+	{{- end}}  
   server {
     listen 80 default_server;
     server_name _;

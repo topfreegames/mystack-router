@@ -20,6 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/flowcontrol"
 
 	"github.com/topfreegames/mystack-router/models"
@@ -27,7 +28,7 @@ import (
 )
 
 // Nginx consts
-const (
+var (
 	NginxConfigDir      = "/etc/nginx"
 	NginxConfigFilePath = NginxConfigDir + "/nginx.conf"
 )
@@ -45,12 +46,19 @@ type Watcher struct {
 func NewWatcher(config *viper.Viper, clientset kubernetes.Interface) (*Watcher, error) {
 	w := &Watcher{}
 	w.configureProps(config)
+
+	NginxConfigDir = config.GetString("nginx.dir")
+	NginxConfigFilePath = NginxConfigDir + "/" + config.GetString("nginx.file")
+
 	if clientset == nil {
-		err := w.configureClient()
+		inCluster := config.GetBool("kubernetes.in-cluster")
+		kubeConfigPath := config.GetString("kubernetes.config")
+		err := w.configureClient(inCluster, kubeConfigPath)
 		return w, err
 	}
 
 	w.kubeClientSet = clientset
+
 	return w, nil
 }
 
@@ -61,8 +69,15 @@ func (w *Watcher) configureProps(config *viper.Viper) {
 	w.kubeDomainSuffix = config.GetString("kubernetes.service-domain-suffix")
 }
 
-func (w *Watcher) configureClient() error {
-	kubeConfig, err := rest.InClusterConfig()
+func (w *Watcher) configureClient(inCluster bool, kubeConfigPath string) error {
+	var kubeConfig *rest.Config
+	var err error
+
+	if !inCluster {
+		kubeConfig, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
+	} else {
+		kubeConfig, err = rest.InClusterConfig()
+	}
 	if err != nil {
 		return err
 	}

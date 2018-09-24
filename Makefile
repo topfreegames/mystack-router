@@ -30,8 +30,8 @@ merge-profiles:
 	@mkdir -p _build
 	@gocovmerge _build/*.out > _build/coverage-all.out
 
-run:
-	@go run main.go start --config ./config/local.yaml
+run-dev:
+	@env MYSTACK_KUBERNETES_IN_CLUSTER=false MYSTACK_NGINX_DIR=nginx go run main.go start --config ./config/local.yaml
 
 setup-ci:
 	@go get -u github.com/golang/dep/...
